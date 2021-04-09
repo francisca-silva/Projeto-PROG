@@ -11,6 +11,24 @@ using namespace std;
 
 // FUNCTION DECLARATION 
 
+
+struct Fence {
+	int pos_x, pos_y;
+	bool working = true;
+};
+
+struct Player
+{
+	int pos_x, pos_y;
+	bool alive = true;
+};
+
+struct Robot {
+	int pos_x, pos_y;
+	bool alive = true; 
+};
+
+//void readMaze(string filename);
 bool menu();
 void rules();
 
@@ -31,7 +49,7 @@ bool menu(){
 				break;
 			case '2':
 				return true;
-			case '0': 
+			case '0':
 				return false;
 			default:
 				cout << "Invalid input";
@@ -52,32 +70,76 @@ void rules(){
 }
 
 
-void chooseMaze(){
+string chooseMaze(){
 
-	int number;
-	string name;
+	int number, numberOfMaze = 5;
+	string filename;
 	ifstream in_stream;
 	bool valid;
 
 	do{
-		cout << "Please choose the number(an integer value) of the maze you want to use(1-5)";
+		cout << "Please choose the number(an integer value) of the maze you want to use(1-5) " << endl;
 		cin >> number;
+		cin.clear();
+		cin.ignore(1000000000,'\n');
 		if (cin.fail()) {
 			valid = false;
-			cin.clear();
-			cin.ignore(1000000000,'\n');
             cout << "Invalid input." << endl;
 		}
 
         // o utilizador pode ter posto um numero primeiro dps um espaço e dps outra coisa qqr e isso n da erro a primeira mas devia
         // temos de encontrar uma forma de evitar isso
 		
-	} while (!valid && (number < 1 ||number > 5));
+	} while (!valid && (number < 1 ||number > numberOfMaze));
 
-	if (number >= 1 && number <= 5) name = "MAZE_0" + to_string(number) + ".txt";
+	if (number >= 1 && number <= numberOfMaze) filename = "MAZE_0" + to_string(number) + ".txt";
 	else valid = false;
 
-	in_stream.open(name);
-
-	//in_stream >> text;
+	return filename;
 }
+
+void ReadMaze(string filename, Player & player, vector <Robot> &robots) {
+
+	ifstream in_stream;
+	int numcol = 1, numrow = 0;
+	string row;
+	size_t size;
+	Robot robot;
+
+	in_stream.open(filename);
+
+    getline(in_stream, row);
+	while (!in_stream.eof()) {
+		
+		getline(in_stream, row);
+		char c;
+		while(c != '\n'){
+			c = row[numrow];
+			numrow++;
+
+			switch (c)
+			{
+			case 'H':
+				player.pos_x = numrow;
+				player.pos_y = numcol;
+				break;
+			case 'R':
+				robots.push_back(Robot());
+				size = robots.size();
+				robot.pos_x = numcol;
+				robot.pos_y = numrow;
+				robots[size-1] = robot;
+				break;
+			case '*':
+				break;
+			default:
+				break;
+			}
+		}
+		
+		numcol++;
+	}
+	in_stream.close();
+	}
+
+

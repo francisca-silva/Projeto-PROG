@@ -15,10 +15,11 @@ int main()
 	bool play;
 	char maze[10][20];
 
-	cout << "Hello friends, welcome to the most amazing game you are ever going to play.Are u ready?" << endl;
-
 	play = menu();
 
+	cout << "Hello friends, welcome to the most amazing game you are ever going to play.Are u ready?" << endl;
+
+	chooseMaze();
 	while (play){
 		
 	
@@ -27,3 +28,4 @@ int main()
 
 	return 0;
 }
+
