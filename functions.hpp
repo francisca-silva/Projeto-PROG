@@ -17,8 +17,7 @@ struct Fence {
 	bool working = true;
 };
 
-struct Player
-{
+struct Player {
 	int pos_x, pos_y;
 	bool alive = true;
 };
@@ -78,7 +77,7 @@ string chooseMaze(){
 	bool valid;
 
 	do{
-		cout << "Please choose the number(an integer value) of the maze you want to use(1-5) " << endl;
+		cout << "Please choose the number(an integer value) of the maze you want to use(1-5)" << endl;
 		cin >> number;
 		cin.clear();
 		cin.ignore(1000000000,'\n');
@@ -142,4 +141,7 @@ void ReadMaze(string filename, Player & player, vector <Robot> &robots) {
 	in_stream.close();
 	}
 
+
+ffffffffffffffffffffffff
+fffffffffffff
 
