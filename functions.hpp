@@ -140,8 +140,3 @@ void ReadMaze(string filename, Player & player, vector <Robot> &robots) {
 	}
 	in_stream.close();
 	}
-
-
-ffffffffffffffffffffffff
-fffffffffffff
-
