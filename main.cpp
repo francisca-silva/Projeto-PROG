@@ -19,7 +19,6 @@ void rules();
 
 struct Fence {
 	int pos_i, pos_j;
-	bool working = true;
 };
 
 struct Player
