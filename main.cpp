@@ -214,22 +214,20 @@ void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <F
 	in_stream.open(filename);
 
 	
-	do {
+	while (getline(in_stream, row)) {
 		
 		numcol = 0;
-
-		getline(in_stream, row);
 		char c = row[numcol];
+
 		do {
-			
 			switch (c)
 			{
 			case 'H':
 				player.pos_i = numrow;
 				player.pos_j = numcol;
 				break;
+
 			case 'R':
-			
 				robots.push_back(Robot());
 				size = robots.size();
 				robot.pos_i = numrow;
@@ -237,8 +235,8 @@ void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <F
 				robot.index = size - 1;
 				robots[size - 1] = robot;
 				break;
-			case '*':
 				
+			case '*':
 				fences.push_back(Fence());
 				size = fences.size();
 				fence.pos_i = numrow;
@@ -254,8 +252,7 @@ void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <F
 		} while (c != '\0');
 
 		numrow++;
-		
-	} while (!in_stream.eof());
+	} 
 	
 	in_stream.close();
 
