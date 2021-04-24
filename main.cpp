@@ -92,7 +92,7 @@ struct Player
 };
 
 struct Robot {
-	int pos_i, pos_j, index, newpos_i, newpos_j;
+	int pos_i, pos_j, index;
 	bool alive = true;
 	
 
@@ -102,50 +102,36 @@ struct Robot {
 							{pos_i,pos_j+1},{pos_i+1,pos_j-1},{pos_i+1,pos_j},{pos_i+1,pos_j+1}};
 
 		int min_index;
-		double dist,mindist = __DBL_MAX__;
+		double dist,min_dist = __DBL_MAX__;
 	
 		for (int i = 0; i < 8; i++){
 			dist = sqrt(pow(newPos[i][0]-player.pos_i,2) + pow(newPos[i][1]-player.pos_j,2));
-			if (dist < mindist) {
-				mindist = dist;
+			if (dist < min_dist) {
+				min_dist = dist;
 				min_index = i;
 			}
 		}
 		
-		newpos_i = newPos[min_index][0];
-		newpos_j = newPos[min_index][1];
+		pos_i = newPos[min_index][0];
+		pos_j = newPos[min_index][1];
 	}
 
 	void collision(vector <Robot>& robots, vector <Fence>& fences){
 
-		bool collide = false;
-
 		for (int i = 0; i < fences.size(); i++) {
-			if (fences[i].pos_i == newpos_i && fences[i].pos_j == newpos_j){
-				collide = true;
+			if (fences[i].pos_i == pos_i && fences[i].pos_j == pos_j){
 				alive = false;
-				fences[i].working = false;
 				break;
 			}
 		}
 
 		for (int i = 0; i < robots.size(); i++) {
-			if (robots[i].index != index && robots[i].pos_i == newpos_i && robots[i].pos_j == newpos_j) {
-				collide = true;
-				pos_i = newpos_i;
-				pos_j = newpos_j;
+			if (robots[i].index != index && robots[i].pos_i == pos_i && robots[i].pos_j == pos_j) {
 				alive = false;
 				robots[i].alive = false;
 				break;
 			}
 		}
-
-		if (!collide) {
-			pos_i = newpos_i;
-			pos_j = newpos_j;
-		
-		}
-		
 	}
 };
 
@@ -289,15 +275,16 @@ void drawMaze(int numcol, int numrow, Player& player, vector <Robot>& robots, ve
 		for (int j = 0; j < numcol; j++) maze[i][j] = ' ';		
 	}
 	 
-	
-	maze[player.pos_i][player.pos_j] = 'H';
+	for (int i = 0; i < fences.size(); i++) {
+		maze[fences[i].pos_i][fences[i].pos_j] = '*';
+	}
+
 	for (int i = 0; i < robots.size(); i++) {
 		if (robots[i].alive) maze[robots[i].pos_i][robots[i].pos_j] = 'R';
 		else maze[robots[i].pos_i][robots[i].pos_j] = 'r';
 	}
-	for (int i = 0; i < fences.size(); i++) {
-		maze[fences[i].pos_i][fences[i].pos_j] = '*';
-	}
+	
+	maze[player.pos_i][player.pos_j] = 'H';
 
 	for (int i = 0; i < numrow; i++){
 		for (int j = 0; j < numcol; j++){
