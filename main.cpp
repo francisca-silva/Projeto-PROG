@@ -11,11 +11,14 @@ using namespace std;
 
 // FUNCTION DECLARATION 
 // POR DESCRICOES DAS LETRAS NAS REGRAS
-// ultima linha do maze
+
 
 //void readMaze(string filename);
 bool menu();
 void rules();
+
+struct Player;
+struct Robots;
 
 struct Fence {
 	int pos_i, pos_j;
@@ -26,15 +29,14 @@ struct Player
 	int pos_i, pos_j;
 	bool alive = true;
 
-	bool NewPlayerPosition() {
+	bool NewPlayerPosition(vector <Fence>& fences) {
 
 		char input;
 		bool valid = false;
 		
 		while (!valid){
 
-			cout << "Please choose one of the following positions:" << endl;
-			cout << "Valid positions: \n Q W E \n A S D \n Z X C" <<endl;
+			cout << "Please choose one of the following positions:\n Q W E \n A S D \n Z X C" << endl;
 			cin >> input;
 			valid = true;
 
@@ -81,6 +83,14 @@ struct Player
 			}
 
 			cin.ignore(100000,'\n');
+
+			for (int i = 0; i < fences.size(); i++) {
+				if (fences[i].pos_i == pos_i && fences[i].pos_j == pos_j){
+					cout << "Invalid input(can't go to fence)" << endl;
+					valid = false;
+					break;
+				}
+			}
 			
 		}
 
@@ -95,15 +105,15 @@ struct Robot {
 	bool alive = true;
 	
 
-	void NewRobotPosition(Player &player){
+	void NewRobotPosition(Player &player, vector <Robot>& robots, vector <Fence>& fences){
 		
-		int newPos[8][2] = {{pos_i-1,pos_j-1},{pos_i-1,pos_j},{pos_i-1,pos_j+1},{pos_i,pos_j-1},
+		int newPos[9][2] = {{pos_i-1,pos_j-1},{pos_i-1,pos_j},{pos_i-1,pos_j+1},{pos_i,pos_j-1}, {pos_i,pos_j},
 							{pos_i,pos_j+1},{pos_i+1,pos_j-1},{pos_i+1,pos_j},{pos_i+1,pos_j+1}};
 
 		int min_index;
 		double dist,min_dist = __DBL_MAX__;
 	
-		for (int i = 0; i < 8; i++){
+		for (int i = 0; i < 9; i++){
 			dist = sqrt(pow(newPos[i][0]-player.pos_i,2) + pow(newPos[i][1]-player.pos_j,2));
 			if (dist < min_dist) {
 				min_dist = dist;
@@ -113,9 +123,6 @@ struct Robot {
 		
 		pos_i = newPos[min_index][0];
 		pos_j = newPos[min_index][1];
-	}
-
-	void collision(vector <Robot>& robots, vector <Fence>& fences){
 
 		for (int i = 0; i < fences.size(); i++) {
 			if (fences[i].pos_i == pos_i && fences[i].pos_j == pos_j){
@@ -131,10 +138,15 @@ struct Robot {
 				break;
 			}
 		}
+
+		if (player.pos_i == pos_i && player.pos_j == pos_j){
+			player.alive = false;
+		}
+			
+
 	}
+
 };
-
-
 
 bool menu() {
 	char c;
@@ -213,7 +225,6 @@ void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <F
 
 	in_stream.open(filename);
 
-	
 	while (getline(in_stream, row)) {
 		
 		numcol = 0;
@@ -261,7 +272,6 @@ void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <F
 
 
 
-
 void drawMaze(int numcol, int numrow, Player& player, vector <Robot>& robots, vector <Fence>& fences)
 {
 	vector <vector <char>> maze(numrow,vector<char>(numcol));
@@ -280,7 +290,8 @@ void drawMaze(int numcol, int numrow, Player& player, vector <Robot>& robots, ve
 		else maze[robots[i].pos_i][robots[i].pos_j] = 'r';
 	}
 	
-	maze[player.pos_i][player.pos_j] = 'H';
+	if (player.alive) maze[player.pos_i][player.pos_j] = 'H';
+	else maze[player.pos_i][player.pos_j] = 'h';
 
 	for (int i = 0; i < numrow; i++){
 		for (int j = 0; j < numcol; j++){
@@ -307,24 +318,27 @@ int main()
 
 	while (play){
 
+		
+		bool alldead;
 		drawMaze(20,10,player,robots,fences);
 
-		play = player.NewPlayerPosition();
-
+		play = player.NewPlayerPosition(fences);
+		
 		for (int i = 0; i < robots.size(); i++){
-			cout << "Robots" << i << endl;
-			if (robots[i].alive){
-				robots[i].NewRobotPosition(player);
-				robots[i].collision(robots,fences);
-			} 
-
+			
+			if (robots[i].alive) robots[i].NewRobotPosition(player, robots, fences);
+				
 		}  
 		
-		
+		for (int i = 0; i < robots.size(); i++){
+			if (robots[i].alive) alldead = false;
+		}  
+
+		// if (alldead) ganhou;
+		// if (!player.alive) perdeu;
 	}
 
 
 	return 0;
 }
-
 
