@@ -17,9 +17,6 @@ using namespace std;
 bool menu();
 void rules();
 
-struct Player;
-struct Robots;
-
 struct Fence {
 	int pos_i, pos_j;
 };
@@ -29,10 +26,10 @@ struct Player
 	int pos_i, pos_j, last_pos_i, last_pos_j;
 	bool alive = true;
 
-	bool NewPlayerPosition(vector <Fence>& fences,vector <Robot>& robots) {
+	bool NewPlayerPosition(vector <Fence>& fences) {
 
 		char input;
-		bool valid = false;
+		bool valid = false, eof;
 		
 		while (!valid){
 
@@ -97,7 +94,7 @@ struct Player
 					break;
 				}
 			}
-
+/*
 			for (size_t i = 0; i < robots.size(); i++) {
 				if (robots[i].pos_i == pos_i && robots[i].pos_j == pos_j){
 					alive = false;
@@ -105,7 +102,7 @@ struct Player
 					break;
 				}
 			}
-
+*/
 		}
 
 		
@@ -319,40 +316,58 @@ void drawMaze(int numcol, int numrow, Player& player, vector <Robot>& robots, ve
 
 int main()
 {
-	bool play;
+	bool play, on = true;
 	Player player;
 	vector <Robot> robots;
 	vector <Fence> fences;
 
-	play = menu();
-
 	cout << "Hello friends, welcome to the most amazing game you are ever going to play.Are u ready?" << endl;
 
-	ReadMaze(chooseMaze(),player,robots, fences);
 
-	while (play){
+	while (on) {
 
-		
-		bool alldead;
-		drawMaze(20,10,player,robots,fences);
+		play = menu();
+		on = play;
 
-		play = player.NewPlayerPosition(fences, robots);
-		
-		for (size_t i = 0; i < robots.size(); i++){
+		ReadMaze(chooseMaze(),player,robots, fences);
+
+		while (play){
+
+			bool alldead;
+			drawMaze(20,10,player,robots,fences);
+
+			if (!player.alive) {
+				cout << "You lost!" << endl;
+				play = false;
+				player.alive = true;
+				robots.clear();
+				fences.clear();
+				break;
+			}
 			
-			if (robots[i].alive) robots[i].NewRobotPosition(player, robots, fences);
+			play = player.NewPlayerPosition(fences);
+
+			cout << play << endl;
+			
+			if (!play) {
+				play = false;
+				player.alive = true;
+				robots.clear();
+				fences.clear();
+				break;
+			}
+
+			for (size_t i = 0; i < robots.size(); i++){
 				
-		}  
-		
-		for (size_t i = 0; i < robots.size(); i++){
-			if (robots[i].alive) alldead = false;
-		}  
+				if (robots[i].alive) robots[i].NewRobotPosition(player, robots, fences);
+					
+			}  
+			
+			for (size_t i = 0; i < robots.size(); i++) if (robots[i].alive) alldead = false;
 
-		// if (alldead) ganhou;
-		// if (!player.alive) perdeu;
-	}
-
-
+			// if (alldead) ganhou;
+			
+		}
+	}	
 	return 0;
 }
-
