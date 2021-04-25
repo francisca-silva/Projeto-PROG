@@ -26,15 +26,18 @@ struct Fence {
 
 struct Player
 {
-	int pos_i, pos_j;
+	int pos_i, pos_j, last_pos_i, last_pos_j;
 	bool alive = true;
 
-	bool NewPlayerPosition(vector <Fence>& fences) {
+	bool NewPlayerPosition(vector <Fence>& fences,vector <Robot>& robots) {
 
 		char input;
 		bool valid = false;
 		
 		while (!valid){
+
+			last_pos_i = pos_i;
+			last_pos_j = pos_j;
 
 			cout << "Please choose one of the following positions:\n Q W E \n A S D \n Z X C" << endl;
 			cin >> input;
@@ -84,14 +87,25 @@ struct Player
 
 			cin.ignore(100000,'\n');
 
-			for (int i = 0; i < fences.size(); i++) {
+			
+			for (size_t i = 0; i < fences.size(); i++) {
 				if (fences[i].pos_i == pos_i && fences[i].pos_j == pos_j){
 					cout << "Invalid input(can't go to fence)" << endl;
 					valid = false;
+					pos_i = last_pos_i;
+			    	pos_j = last_pos_j;
 					break;
 				}
 			}
-			
+
+			for (size_t i = 0; i < robots.size(); i++) {
+				if (robots[i].pos_i == pos_i && robots[i].pos_j == pos_j){
+					alive = false;
+
+					break;
+				}
+			}
+
 		}
 
 		
@@ -124,14 +138,14 @@ struct Robot {
 		pos_i = newPos[min_index][0];
 		pos_j = newPos[min_index][1];
 
-		for (int i = 0; i < fences.size(); i++) {
+		for (size_t i = 0; i < fences.size(); i++) {
 			if (fences[i].pos_i == pos_i && fences[i].pos_j == pos_j){
 				alive = false;
 				break;
 			}
 		}
 
-		for (int i = 0; i < robots.size(); i++) {
+		for (size_t i = 0; i < robots.size(); i++) {
 			if (robots[i].index != index && robots[i].pos_i == pos_i && robots[i].pos_j == pos_j) {
 				alive = false;
 				robots[i].alive = false;
@@ -281,11 +295,11 @@ void drawMaze(int numcol, int numrow, Player& player, vector <Robot>& robots, ve
 		for (int j = 0; j < numcol; j++) maze[i][j] = ' ';		
 	}
 	 
-	for (int i = 0; i < fences.size(); i++) {
+	for (size_t i = 0; i < fences.size(); i++) {
 		maze[fences[i].pos_i][fences[i].pos_j] = '*';
 	}
 
-	for (int i = 0; i < robots.size(); i++) {
+	for (size_t i = 0; i < robots.size(); i++) {
 		if (robots[i].alive) maze[robots[i].pos_i][robots[i].pos_j] = 'R';
 		else maze[robots[i].pos_i][robots[i].pos_j] = 'r';
 	}
@@ -322,15 +336,15 @@ int main()
 		bool alldead;
 		drawMaze(20,10,player,robots,fences);
 
-		play = player.NewPlayerPosition(fences);
+		play = player.NewPlayerPosition(fences, robots);
 		
-		for (int i = 0; i < robots.size(); i++){
+		for (size_t i = 0; i < robots.size(); i++){
 			
 			if (robots[i].alive) robots[i].NewRobotPosition(player, robots, fences);
 				
 		}  
 		
-		for (int i = 0; i < robots.size(); i++){
+		for (size_t i = 0; i < robots.size(); i++){
 			if (robots[i].alive) alldead = false;
 		}  
 
