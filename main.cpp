@@ -43,7 +43,7 @@ struct Player
 			if (cin.eof()) {
 				cin.clear();
 				cin.ignore(100000,'\n');
-				return menu();
+				return false;
 			}
 
 			switch (toupper(input)){
@@ -195,7 +195,7 @@ void rules() {
 }
 
 
-string chooseMaze() {
+int chooseMaze() {
 
 	int number, numberOfMaze = 5;
 	string filename;
@@ -203,24 +203,33 @@ string chooseMaze() {
 	bool valid;
 
 	do {
+		valid = true;
 		cout << "Please choose the number(an integer value) of the maze you want to use(1-5): " << endl;
 		cin >> number;
-		cin.clear();
-		cin.ignore(1000000000, '\n');
+		
 		if (cin.fail()) {
-			valid = false;
+			cin.clear();
+			cin.ignore(1000000000, '\n');
 			cout << "Invalid input." << endl;
+			valid = false;
 		}
+		cin.ignore(1000000000, '\n');
 
-		// o utilizador pode ter posto um numero primeiro dps um espa�o e dps outra coisa qqr e isso n da erro a primeira mas devia
+		if (number > 9) filename = "MAZE_" + to_string(number) + ".txt";
+		else filename = "MAZE_0" + to_string(number) + ".txt";
+
+		in_stream.open(filename);
+		if (!in_stream){
+			cout << "This maze doesn't exist" << endl;
+			valid = false;
+		}
+		in_stream.close();
+		// o utilizador pode ter posto um numero primeiro dps um espaço e dps outra coisa qqr e isso n da erro a primeira mas devia
 		// temos de encontrar uma forma de evitar isso
 
-	} while (!valid && (number < 1 || number > numberOfMaze));
+	} while (!valid);
 
-	if (number >= 1 && number <= numberOfMaze) filename = "MAZE_0" + to_string(number) + ".txt";
-	else valid = false;
-
-	return filename;
+	return number;
 }
 
 void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <Fence>& fences) {
@@ -313,61 +322,90 @@ void drawMaze(int numcol, int numrow, Player& player, vector <Robot>& robots, ve
 	
 }
 
+bool play(int numcol, int numrow, Player& player, vector <Robot>& robots, vector <Fence>& fences){
+
+	bool alldead, play = true;
+
+	while (play){
+
+		alldead = true;
+	
+		drawMaze(20,10,player,robots,fences);
+
+		if (!player.alive) {
+			cout << "You lost!" << endl << endl;
+			return false;
+		}
+		
+		if (!player.NewPlayerPosition(fences)) return false;
+		
+
+		for (size_t i = 0; i < robots.size(); i++){
+			
+			if (robots[i].alive) robots[i].NewRobotPosition(player, robots, fences);
+				
+		}  
+		
+		for (size_t i = 0; i < robots.size(); i++) if (robots[i].alive) alldead = false;
+
+		if (alldead) {
+			drawMaze(20,10,player,robots,fences);
+			cout << "You won!!" << endl <<endl;
+			return true;
+		}
+	}
+}
+
+void scoreboard(int num_maze){
+
+	vector <string> score_info;
+	string filename = "Scoreboard_" + to_string(num_maze) + ".txt";
+	// ler o ficheiro
+	ifstream in_stream;
+
+	in_stream.open(filename);
+
+    if (!in_stream) {
+		ofstream newfile;
+		newfile.open(filename);
+		newfile.close();
+	}
+	in_stream.close();
+	// trabalhar os dados
+	
+	// voltar a escrever(mostrar ao utilizador tambem)
+}
 
 int main()
 {
-	bool play, on = true;
 	Player player;
 	vector <Robot> robots;
 	vector <Fence> fences;
+	int num_maze;
 
 	cout << "Hello friends, welcome to the most amazing game you are ever going to play.Are u ready?" << endl;
 
 
-	while (on) {
+	while (true) {
+		string filename;
+		if (!menu()) break;
 
-		play = menu();
-		on = play;
+		num_maze = chooseMaze();
 
-		ReadMaze(chooseMaze(),player,robots, fences);
+		if (num_maze > 9) filename = "MAZE_" + to_string(num_maze) + ".txt";
+		else filename = "MAZE_0" + to_string(num_maze) + ".txt";
 
-		while (play){
+		ReadMaze(filename,player,robots,fences);
 
-			bool alldead;
-			drawMaze(20,10,player,robots,fences);
-
-			if (!player.alive) {
-				cout << "You lost!" << endl;
-				play = false;
-				player.alive = true;
-				robots.clear();
-				fences.clear();
-				break;
-			}
-			
-			play = player.NewPlayerPosition(fences);
-
-			cout << play << endl;
-			
-			if (!play) {
-				play = false;
-				player.alive = true;
-				robots.clear();
-				fences.clear();
-				break;
-			}
-
-			for (size_t i = 0; i < robots.size(); i++){
-				
-				if (robots[i].alive) robots[i].NewRobotPosition(player, robots, fences);
-					
-			}  
-			
-			for (size_t i = 0; i < robots.size(); i++) if (robots[i].alive) alldead = false;
-
-			// if (alldead) ganhou;
-			
+		if(play(20,10,player,robots,fences)) {
+			scoreboard(num_maze);
 		}
+
+		player.alive = true;
+		robots.clear();
+		fences.clear();
+		
 	}	
 	return 0;
 }
+
