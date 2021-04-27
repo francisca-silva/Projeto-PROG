@@ -159,6 +159,11 @@ struct Robot {
 
 };
 
+struct Player_info{
+	string name;
+	int score;
+};
+
 bool menu() {
 	char c;
 
@@ -357,11 +362,15 @@ bool play(int numcol, int numrow, Player& player, vector <Robot>& robots, vector
 }
 
 void scoreboard(int num_maze){
-
-	vector <string> score_info;
-	string filename = "Scoreboard_" + to_string(num_maze) + ".txt";
+	
+	vector <vector <char>> score_info(1,vector<char> (22));
+	string filename, line;
 	// ler o ficheiro
 	ifstream in_stream;
+	int i = 0;
+
+	if (num_maze > 9) filename = "Scoreboard_" + to_string(num_maze) + ".txt";
+	else filename = "Scoreboard_0" + to_string(num_maze) + ".txt";
 
 	in_stream.open(filename);
 
@@ -371,7 +380,25 @@ void scoreboard(int num_maze){
 		newfile.close();
 	}
 	in_stream.close();
+
+	in_stream.open(filename);
+
+	while(getline(in_stream, line)) {
+		for (int j = 0; j < 22; j++){
+			score_info[i][j] = line[j];
+		}
+		i++;
+	}
+
+	for (int k = 0; k < score_info.size(); k++){
+		for (int j = 0; j < 22; j++){
+			cout << score_info[i][j];	
+		} 	
+		cout << endl;
+	}
+
 	// trabalhar os dados
+	
 	
 	// voltar a escrever(mostrar ao utilizador tambem)
 }

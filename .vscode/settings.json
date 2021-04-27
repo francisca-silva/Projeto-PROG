@@ -5,6 +5,8 @@
         "*.tcc": "cpp",
         "string": "cpp",
         "istream": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "ostream": "cpp",
+        "typeinfo": "cpp"
     }
 }
