@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <iomanip>
+#include <climits>
 
 using namespace std;
 
@@ -186,6 +188,9 @@ bool menu() {
 			cout << "Invalid input";
 			break;
 		}
+
+		//cin.clear();
+		//cin.ignore(1000000000, '\n');
 	}
 
 }
@@ -361,13 +366,20 @@ bool play(int numcol, int numrow, Player& player, vector <Robot>& robots, vector
 	}
 }
 
-void scoreboard(int num_maze){
+struct Player_info{
+	string name;
+	int score;
+};
+
+void scoreboard(int num_maze, int time){
 	
-	vector <vector <char>> score_info(1,vector<char> (22));
+    vector <Player_info> score_info;
+    Player_info p_info;
 	string filename, line;
+
 	// ler o ficheiro
 	ifstream in_stream;
-	int i = 0;
+	int index = 0;
 
 	if (num_maze > 9) filename = "Scoreboard_" + to_string(num_maze) + ".txt";
 	else filename = "Scoreboard_0" + to_string(num_maze) + ".txt";
@@ -381,26 +393,68 @@ void scoreboard(int num_maze){
 	}
 	in_stream.close();
 
+
 	in_stream.open(filename);
 
-	while(getline(in_stream, line)) {
-		for (int j = 0; j < 22; j++){
-			score_info[i][j] = line[j];
-		}
-		i++;
+    while(getline(in_stream, line)) {
+        if (line[21] == 'e' || line[21] == '-') continue;
+        p_info.name = line.substr(0,15); 
+		p_info.score = stoi(line.substr(18,4), nullptr);
+		score_info.push_back(p_info);
+        line = "                      ";
 	}
-
-	for (int k = 0; k < score_info.size(); k++){
-		for (int j = 0; j < 22; j++){
-			cout << score_info[i][j];	
-		} 	
-		cout << endl;
-	}
-
-	// trabalhar os dados
 	
+	in_stream.close();
+	
+	// trabalhar os dados
+	bool valid;
+	do {
+		valid = true;
+		cout << "Insert name(max 15 characters): ";
+		getline(cin, line);
+		if (line.size() > 15) {
+			cout << "Invalid input(too many characters)" << endl;
+			valid = false;
+		}
+
+		line.resize(15,' ');
+
+		for (int i = 0; i < score_info.size();i++){
+			if (score_info[i].name == line) {
+				cout << "Invalid input(already existing name)" << endl;
+				valid = false;
+				break;
+			}
+		}
+	} while (!valid);
+
+	p_info.name = line; 
+	p_info.score = time;
+
+	for (int i = 0; i < score_info.size();i++){
+		//if (time == score_info[i].score) {
+		//	if (p_info.name > )
+		//}
+		if (time <= score_info[i].score) index = i;
+	}
+	score_info.insert(score_info.begin() + index, p_info);
 	
 	// voltar a escrever(mostrar ao utilizador tambem)
+	
+	ofstream write_stream;
+
+	write_stream.open(filename);
+
+	write_stream << "Player          - Time\n----------------------";
+
+	for (int i = 0; i < score_info.size();i++){
+		write_stream << endl;
+		write_stream << fixed << setw(15) << setfill(' ') << left << score_info[i].name;
+		write_stream << fixed << setw(3) << " - ";
+		write_stream << fixed << setw(4) << setfill(' ') << right << to_string(score_info[i].score);
+	}
+
+	write_stream.close();
 }
 
 int main()
@@ -409,12 +463,14 @@ int main()
 	vector <Robot> robots;
 	vector <Fence> fences;
 	int num_maze;
+	bool win;
 
 	cout << "Hello friends, welcome to the most amazing game you are ever going to play.Are u ready?" << endl;
 
 
 	while (true) {
 		string filename;
+		
 		if (!menu()) break;
 
 		num_maze = chooseMaze();
@@ -423,10 +479,18 @@ int main()
 		else filename = "MAZE_0" + to_string(num_maze) + ".txt";
 
 		ReadMaze(filename,player,robots,fences);
+		
+		time_t start = time(NULL);
+		win = play(20,10,player,robots,fences);
+		time_t end = time(NULL);
+		int time = difftime(end, start);
 
-		if(play(20,10,player,robots,fences)) {
-			scoreboard(num_maze);
+		cout << time <<endl;
+
+		if(win) {
+			scoreboard(num_maze, time);
 		}
+
 
 		player.alive = true;
 		robots.clear();

@@ -1,0 +1,5 @@
+Player          - Time
+----------------------
+blabla          -    4
+nome no 2       -   50
+nome qualquer   -  345
