@@ -207,7 +207,7 @@ void rules() {
 
 int chooseMaze() {
 
-	int number, numberOfMaze = 5;
+	int number;
 	string filename;
 	ifstream in_stream;
 	bool valid;
@@ -340,7 +340,7 @@ bool play(int numcol, int numrow, Player& player, vector <Robot>& robots, vector
 
 		alldead = true;
 	
-		drawMaze(20,10,player,robots,fences);
+		drawMaze(numcol,numrow,player,robots,fences);
 
 		if (!player.alive) {
 			cout << "You lost!" << endl << endl;
@@ -359,17 +359,12 @@ bool play(int numcol, int numrow, Player& player, vector <Robot>& robots, vector
 		for (size_t i = 0; i < robots.size(); i++) if (robots[i].alive) alldead = false;
 
 		if (alldead) {
-			drawMaze(20,10,player,robots,fences);
+			drawMaze(numcol,numrow,player,robots,fences);
 			cout << "You won!!" << endl <<endl;
 			return true;
 		}
 	}
 }
-
-struct Player_info{
-	string name;
-	int score;
-};
 
 void scoreboard(int num_maze, int time){
 	
@@ -419,7 +414,7 @@ void scoreboard(int num_maze, int time){
 
 		line.resize(15,' ');
 
-		for (int i = 0; i < score_info.size();i++){
+		for (size_t i = 0; i < score_info.size();i++){
 			if (score_info[i].name == line) {
 				cout << "Invalid input(already existing name)" << endl;
 				valid = false;
@@ -431,12 +426,16 @@ void scoreboard(int num_maze, int time){
 	p_info.name = line; 
 	p_info.score = time;
 
-	for (int i = 0; i < score_info.size();i++){
+	for (size_t i = 0; i < score_info.size();i++){
 		//if (time == score_info[i].score) {
 		//	if (p_info.name > )
 		//}
-		if (time <= score_info[i].score) index = i;
+		if (time <= score_info[i].score) {
+			index = i;
+			break;
+		}
 	}
+	cout << "index: " << index << endl;
 	score_info.insert(score_info.begin() + index, p_info);
 	
 	// voltar a escrever(mostrar ao utilizador tambem)
@@ -447,7 +446,7 @@ void scoreboard(int num_maze, int time){
 
 	write_stream << "Player          - Time\n----------------------";
 
-	for (int i = 0; i < score_info.size();i++){
+	for (size_t i = 0; i < score_info.size();i++){
 		write_stream << endl;
 		write_stream << fixed << setw(15) << setfill(' ') << left << score_info[i].name;
 		write_stream << fixed << setw(3) << " - ";
@@ -455,6 +454,14 @@ void scoreboard(int num_maze, int time){
 	}
 
 	write_stream.close();
+
+	in_stream.open(filename);
+	cout << endl;
+    while(getline(in_stream, line)) {
+        cout << line << endl;
+	}
+	cout << endl;
+	in_stream.close();
 }
 
 int main()
@@ -490,8 +497,7 @@ int main()
 		if(win) {
 			scoreboard(num_maze, time);
 		}
-
-
+		
 		player.alive = true;
 		robots.clear();
 		fences.clear();
@@ -499,4 +505,5 @@ int main()
 	}	
 	return 0;
 }
+
 

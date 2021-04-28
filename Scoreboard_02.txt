@@ -1,5 +1,2 @@
 Player          - Time
 ----------------------
-blabla          -    5
-dododood        -   35
-nome no 2       -  234
