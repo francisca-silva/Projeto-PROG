@@ -1,7 +1,11 @@
 Player          - Time
 ----------------------
+s               -    2
+    r   i       -    3
 blabla          -    4
+yay i won       -   17
 tftftf          -   24
 pera            -   25
+xiquitita <3    -   36
 nome no 2       -   50
 nome qualquer   -  345
