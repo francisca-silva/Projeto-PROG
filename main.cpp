@@ -6,8 +6,9 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <iomanip>
 #include <climits>
+#include <ios>
+#include <limits>
 
 using namespace std;
 
@@ -18,6 +19,12 @@ using namespace std;
 //void readMaze(string filename);
 bool menu();
 void rules();
+
+struct Maze_Size {
+	int numcol;
+	int numrow;
+};
+
 
 struct Fence {
 	int pos_i, pos_j;
@@ -44,7 +51,7 @@ struct Player
 
 			if (cin.eof()) {
 				cin.clear();
-				cin.ignore(100000,'\n');
+				cin.ignore(numeric_limits<streamsize>::max(),'\n');
 				return false;
 			}
 
@@ -84,7 +91,7 @@ struct Player
 					break;
 			}
 
-			cin.ignore(100000,'\n');
+			cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
 			
 			for (size_t i = 0; i < fences.size(); i++) {
@@ -96,7 +103,7 @@ struct Player
 					break;
 				}
 			}
-/*
+			/*
 			for (size_t i = 0; i < robots.size(); i++) {
 				if (robots[i].pos_i == pos_i && robots[i].pos_j == pos_j){
 					alive = false;
@@ -104,7 +111,7 @@ struct Player
 					break;
 				}
 			}
-*/
+			*/
 		}
 
 		
@@ -175,6 +182,9 @@ bool menu() {
 		cout << "0) Exit;" << endl;
 
 		cin >> c;
+	
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		if (cin.eof()) return false;
 
 		switch (c) {
 		case '1':
@@ -188,11 +198,7 @@ bool menu() {
 			cout << "Invalid input";
 			break;
 		}
-
-		//cin.clear();
-		//cin.ignore(1000000000, '\n');
 	}
-
 }
 
 void rules() {
@@ -211,38 +217,61 @@ int chooseMaze() {
 	string filename;
 	ifstream in_stream;
 	bool valid;
+	char check;
 
 	do {
 		valid = true;
-		cout << "Please choose the number(an integer value) of the maze you want to use(1-5): " << endl;
+		cout << "Please choose the number(an integer value) of the maze you want to use: ";
 		cin >> number;
 		
+		if (cin.eof()) {
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			return -1;
+		}
 		if (cin.fail()) {
 			cin.clear();
-			cin.ignore(1000000000, '\n');
-			cout << "Invalid input." << endl;
+			cout << "Invalid input(not an integer)." << endl << endl;
 			valid = false;
 		}
-		cin.ignore(1000000000, '\n');
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-		if (number > 9) filename = "MAZE_" + to_string(number) + ".txt";
-		else filename = "MAZE_0" + to_string(number) + ".txt";
+		if (valid) {
+			if (number > 9) filename = "MAZE_" + to_string(number) + ".txt";
+			else filename = "MAZE_0" + to_string(number) + ".txt";
 
-		in_stream.open(filename);
-		if (!in_stream){
-			cout << "This maze doesn't exist" << endl;
-			valid = false;
+			in_stream.open(filename);
+			if (!in_stream){
+				cout << "This maze doesn't exist" << endl << endl;
+				valid = false;
+			}
+			in_stream.close();
 		}
-		in_stream.close();
-		// o utilizador pode ter posto um numero primeiro dps um espaço e dps outra coisa qqr e isso n da erro a primeira mas devia
-		// temos de encontrar uma forma de evitar isso
 
+		if (valid) {
+			while (true) {
+				cout << "Open " << filename << " ?(y/n) "; cin >> check;
+				if (cin.eof()) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					return -1;
+				}
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				if (tolower(check) == 'n') {
+					valid = false;
+					break;
+				}
+				else if(tolower(check) == 'y') break;
+				else cout << "Invalid input." << endl << endl;
+
+			}
+		}
 	} while (!valid);
 
 	return number;
 }
 
-void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <Fence>& fences) {
+Maze_Size ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <Fence>& fences) {
 
 	ifstream in_stream;
 	int numcol = 0, numrow = 0;
@@ -250,8 +279,9 @@ void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <F
 	size_t size;
 	Robot robot;
 	Fence fence;
+	Maze_Size size_info;
 
-	cout << filename;
+	cout << endl << filename << endl;
 
 	in_stream.open(filename);
 
@@ -297,7 +327,12 @@ void ReadMaze(string filename, Player& player, vector <Robot>& robots, vector <F
 	
 	in_stream.close();
 
-	cout << endl << numcol << " x " << numrow << endl << endl;
+	cout << numcol << " x " << numrow << endl << endl;
+
+	size_info.numcol = numcol;
+	size_info.numrow = numrow;
+
+	return size_info;
 }
 
 
@@ -366,7 +401,7 @@ bool play(int numcol, int numrow, Player& player, vector <Robot>& robots, vector
 	}
 }
 
-void scoreboard(int num_maze, int time){
+bool scoreboard(int num_maze, int time){
 	
     vector <Player_info> score_info;
     Player_info p_info;
@@ -407,7 +442,18 @@ void scoreboard(int num_maze, int time){
 		valid = true;
 		cout << "Insert name(max 15 characters): ";
 		getline(cin, line);
-		if (line.size() > 15) {
+
+		if (cin.eof()) {
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			return false;
+		}
+
+		if (line.size() == 0) {
+			cout << "Invalid input(no characters)" << endl;
+			valid = false;
+		}
+		else if (line.size() > 15) {
 			cout << "Invalid input(too many characters)" << endl;
 			valid = false;
 		}
@@ -426,7 +472,7 @@ void scoreboard(int num_maze, int time){
 	p_info.name = line; 
 	p_info.score = time;
 
-	for (size_t i = 0; i < score_info.size();i++){
+	for (size_t i = 0; i < score_info.size(); i++){
 		//if (time == score_info[i].score) {
 		//	if (p_info.name > )
 		//}
@@ -435,7 +481,6 @@ void scoreboard(int num_maze, int time){
 			break;
 		}
 	}
-	cout << "index: " << index << endl;
 	score_info.insert(score_info.begin() + index, p_info);
 	
 	// voltar a escrever(mostrar ao utilizador tambem)
@@ -456,12 +501,13 @@ void scoreboard(int num_maze, int time){
 	write_stream.close();
 
 	in_stream.open(filename);
-	cout << endl;
     while(getline(in_stream, line)) {
-        cout << line << endl;
+        cout << endl << line;
 	}
-	cout << endl;
+	cout << endl << endl;
 	in_stream.close();
+
+	return true;
 }
 
 int main()
@@ -471,9 +517,9 @@ int main()
 	vector <Fence> fences;
 	int num_maze;
 	bool win;
+	Maze_Size size_info;
 
 	cout << "Hello friends, welcome to the most amazing game you are ever going to play.Are u ready?" << endl;
-
 
 	while (true) {
 		string filename;
@@ -481,21 +527,20 @@ int main()
 		if (!menu()) break;
 
 		num_maze = chooseMaze();
+		if (num_maze == -1) continue;
 
 		if (num_maze > 9) filename = "MAZE_" + to_string(num_maze) + ".txt";
 		else filename = "MAZE_0" + to_string(num_maze) + ".txt";
 
-		ReadMaze(filename,player,robots,fences);
+		size_info = ReadMaze(filename,player,robots,fences);
 		
 		time_t start = time(NULL);
-		win = play(20,10,player,robots,fences);
+		win = play(size_info.numcol,size_info.numrow,player,robots,fences);
 		time_t end = time(NULL);
 		int time = difftime(end, start);
 
-		cout << time <<endl;
-
 		if(win) {
-			scoreboard(num_maze, time);
+			if(!scoreboard(num_maze, time)) continue;
 		}
 		
 		player.alive = true;
