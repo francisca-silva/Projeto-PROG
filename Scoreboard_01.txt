@@ -1,9 +1,15 @@
 Player          - Time
 ----------------------
 s               -    2
-    r   i       -    3
+lu              -    3
+luisa           -    4
+lulu            -    4
 blabla          -    4
+2nd try 1       -    6
+lollipop        -   10
+,               -   11
 yay i won       -   17
+first           -   18
 tftftf          -   24
 pera            -   25
 xiquitita <3    -   36

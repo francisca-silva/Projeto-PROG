@@ -11,8 +11,6 @@
 
 using namespace std;
 
-// POR DESCRICOES DAS LETRAS NAS REGRAS
-
 struct Maze_Size;
 struct Fence;
 struct Player;
@@ -93,12 +91,12 @@ bool scoreboard(const int num_maze, const int time);
 // FUNCTION DEFINITIONS
 
 
-struct Maze_Size { //Declare Maze_Size struct
-	int numcol; // declare member types numcol and numrow
+struct Maze_Size { 
+	int numcol; 
 	int numrow;
 };
 
-struct Fence {  // Declare Fence struct
+struct Fence {  
 	int pos_i, pos_j; //pos_i is the index of the row and pos_j is the index of the column
 };
 
@@ -290,7 +288,7 @@ void rules() {
 		"The robots have no  vision sensors but they have an accurate odour sensor that allows them to follow the player!" <<
 		"There is one hope : make the robots hit the maze or each other. If all of them are destroyed, the player wins !!" << endl;
 }
-
+// POR DESCRICOES DAS LETRAS NAS REGRAS
 
 /** 
 Gives the user the option to choose the maze he wants to play.
@@ -306,7 +304,7 @@ int chooseMaze() {
 
 	do {    // checks if the input of the number of the maze is valid and when it reaches it, leaves the cycle
 		valid = true;  // valid starts as true but is changed if any of the conditions is not met
-		cout << "Please choose the number(an integer value) of the maze you want to use: ";
+		cout << "Please choose the number(an integer value) of the maze you want to use:(1-6) ";
 		cin >> number;
 		 
 		if (cin.eof()) {   // if the user types CTRL-Z it leaves the function with -1, leading to the menu(on the main function)
@@ -314,16 +312,16 @@ int chooseMaze() {
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			return -1;
 		}
-		if (cin.fail()) {  // if the input is invalid, the cycle produces an error message 
+		if (cin.fail()) {  // if the input is not an integer number, the cycle produces an error message 
 			cin.clear();
 			cout << "Invalid input(not an integer)." << endl << endl;
 			valid = false;
 		}
-		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cin.ignore(numeric_limits<streamsize>::max(), '\n'); //ignores everything other than the first character
 
-		if (valid) {  
-			if (number > 9) filename = "MAZE_" + to_string(number) + ".txt";
-			else filename = "MAZE_0" + to_string(number) + ".txt";
+		if (valid) {  // checks if the file exists
+			if (number > 9) filename = "MAZE_" + to_string(number) + ".txt"; // if more than 10 mazes were made this would access them
+			else filename = "MAZE_0" + to_string(number) + ".txt";  // otherwise this would compose the respetive maze's name (according to the chosen number)
 
 			in_stream.open(filename);
 			if (!in_stream){
@@ -333,7 +331,7 @@ int chooseMaze() {
 			in_stream.close();
 		}
 
-		if (valid) {
+		if (valid) {  // gives the user the possibility to confirm if the maze choice is correct
 			while (true) {
 				cout << "Open " << filename << " ?(y/n) "; cin >> check;
 				if (cin.eof()) {
@@ -342,7 +340,7 @@ int chooseMaze() {
 					return -1;
 				}
 				cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				if (tolower(check) == 'n') {
+				if (tolower(check) == 'n') {  // it accepts inputs such as "yes"(because of cin.ignore), "Y"(tolower()), "NO", etc
 					valid = false;
 					break;
 				}
@@ -366,66 +364,61 @@ Opens and reads the file where the maze is.
 */
 Maze_Size readMaze(const string filename, Player& player, vector <Robot>& robots, vector <Fence>& fences) {
 
-	ifstream in_stream;
-	int numcol = 0, numrow = 0;
-	string row;
-	size_t size;
-	Robot robot;
-	Fence fence;
-	Maze_Size size_info;
+	ifstream in_stream; // stream that reads the contents of the chosen file 
+	int numcol = 0, numrow = 0; //number of columns and rows
+	string row;  // to store the value of each row at a time
+	Robot robot;  //creates a generic robot to help fill the vector of robots
+	Fence fence;  //creates a generic fence for the same purpose
+	Maze_Size size_info;  // used at the end to return the proportions of the maze
 
-	cout << endl << filename << endl;
+	cout << endl << filename << endl; //prints the name of the maze
 
 	in_stream.open(filename);
 
-	while (getline(in_stream, row)) {
+	while (getline(in_stream, row)) { // cycle that analyses the maze, collecting its different elements from line to line
 		
-		numcol = 0;
-		char c = row[numcol];
+		numcol = 0; // starts as 0 in every iteration of the while cycle
+		char object = row[numcol];  // used to store the value of each space in the maze
 
-		do {
-			switch (c)
+		do {  // until the last element of each line
+			switch (object)
 			{
-			case 'H':
-				player.pos_i = numrow;
+			case 'H': 
+				player.pos_i = numrow; // sets the player's position
 				player.pos_j = numcol;
 				break;
 
-			case 'R':
-				robots.push_back(Robot());
-				size = robots.size();
-				robot.pos_i = numrow;
+			case 'R': 
+				robot.pos_i = numrow;  // sets the generic robot's position and index on the vector of Robots
 				robot.pos_j = numcol;
-				robot.index = size - 1;
-				robots[size - 1] = robot;
+				robot.index = robots.size() - 1;
+				robots.push_back(robot);  // adds the robot to the vector
 				break;
 				
-			case '*':
-				fences.push_back(Fence());
-				size = fences.size();
-				fence.pos_i = numrow;
+			case '*': // 
+				fence.pos_i = numrow;  // sets the generic fence's position
 				fence.pos_j = numcol;
-				fences[size - 1] = fence;
+				fences.push_back(fence);  // and adds it to the vector of Fences
 				break;
-			default:
+			default: // if it is ' ' it is ignored
 				break;
 			}
-			numcol++;
-			c = row[numcol];
+			numcol++;  //increments the number of columns
+			object = row[numcol];  // reads the next element
 
-		} while (c != '\0');
+		} while (object != '\0'); // repeats until the end of the string
 
-		numrow++;
+		numrow++; //increments the number of rows
 	} 
 	
-	in_stream.close();
+	in_stream.close(); 
 
-	cout << numcol << " x " << numrow << endl << endl;
+	cout << numcol << " x " << numrow << endl << endl; //prints the number of columns and rows
 
-	size_info.numcol = numcol;
+	size_info.numcol = numcol; // stores numcol and numrow on the the size_info
 	size_info.numrow = numrow;
 
-	return size_info;
+	return size_info;  // returns the size of the maze
 }
 
 
@@ -440,27 +433,27 @@ Then it shows the vector on the screen.
 @return void
 */
 void drawMaze(const int numcol, const int numrow, Player& player, vector <Robot>& robots, vector <Fence>& fences) {
-	vector <vector <char>> maze(numrow,vector<char>(numcol));
+	
+	vector <vector <char>> maze(numrow,vector<char>(numcol)); // this vector will be written in each function call
 
-
-	for (int i = 0; i < numrow; i++){
+	for (int i = 0; i < numrow; i++){    // fills with blank spaces the number of columns and rows
 		for (int j = 0; j < numcol; j++) maze[i][j] = ' ';		
 	}
 	 
-	for (size_t i = 0; i < fences.size(); i++) {
+	for (size_t i = 0; i < fences.size(); i++) {  // then it writes on top of the ' ' all of the fences
 		maze[fences[i].pos_i][fences[i].pos_j] = '*';
 	}
 
-	for (size_t i = 0; i < robots.size(); i++) {
+	for (size_t i = 0; i < robots.size(); i++) {  // if any robot dies because of a fence, it is written on top of it(and the fence disappears)
 		if (robots[i].alive) maze[robots[i].pos_i][robots[i].pos_j] = 'R';
 		else maze[robots[i].pos_i][robots[i].pos_j] = 'r';
 	}
 	
-	if (player.alive) maze[player.pos_i][player.pos_j] = 'H';
+	if (player.alive) maze[player.pos_i][player.pos_j] = 'H'; // lastly if the player is dead because of a robot(in the same position) it is written on top of it
 	else maze[player.pos_i][player.pos_j] = 'h';
 
 	cout << endl;
-	for (int i = 0; i < numrow; i++){
+	for (int i = 0; i < numrow; i++){       // prints the maze
 		for (int j = 0; j < numcol; j++){
 			cout << maze[i][j];	
 		} 	
@@ -481,34 +474,34 @@ Plays one game using the choosen maze.
 */
 bool play(const int numcol, const int numrow, Player& player, vector <Robot>& robots, vector <Fence>& fences){
 
-	bool alldead, play = true;
+	bool alldead; // to check if all of the robots are dead
 
-	while (play){
+	while (true){  // plays until the function returns true or false depending on the output
 
-		alldead = true;
+		alldead = true; //assuming all robots are dead
 	
-		drawMaze(numcol,numrow,player,robots,fences);
+		drawMaze(numcol,numrow,player,robots,fences); // call to function in order to draw the chosen maze
 
 		if (!player.alive) {
 			cout << "You lost!" << endl << endl;
-			return false;
+			return false;  
 		}
 		
-		if (!player.newPlayerPosition(fences)) return false;
+		if (!player.newPlayerPosition(fences)) return false; // this function's purpose is to move the player but if the user typed CTRL-Z it immediately ends the play() function and returns false
 		
 
-		for (size_t i = 0; i < robots.size(); i++){
+		for (size_t i = 0; i < robots.size(); i++){  // moves each robot 
 			
 			if (robots[i].alive) robots[i].NewRobotPosition(player, robots, fences);
 				
 		}  
 		
-		for (size_t i = 0; i < robots.size(); i++) if (robots[i].alive) alldead = false;
+		for (size_t i = 0; i < robots.size(); i++) if (robots[i].alive) alldead = false;  // if any robot is still alive then they're not all dead
 
 		if (alldead) {
-			drawMaze(numcol,numrow,player,robots,fences);
+			drawMaze(numcol,numrow,player,robots,fences); // shows the final maze before leaving the function
 			cout << "You won!!" << endl <<endl;
-			return true;
+			return true;  // this true will call the scoreboad() function to add the player's name and score
 		}
 	}
 }
@@ -523,64 +516,61 @@ Updates and presents the scoreboard of the winners of the game and the time they
 */
 bool scoreboard(const int num_maze,const int time){
 	
-    vector <Player_Info> score_info;
-    Player_Info p_info;
-	string filename, line;
+    vector <Player_Info> score_info; // this vector will hold all previous player information
+    Player_Info p_info; // generic Player_Info to help fill the vector and eventually the current user's information
+	string filename, line; // name of the file to be accessed and each line of it
 
-	// reading the file
+	// code to read the scoreboard file
 	ifstream in_stream;
-	int index = 0;
 
-	if (num_maze > 9) filename = "Scoreboard_" + to_string(num_maze) + ".txt";
+	if (num_maze > 9) filename = "Scoreboard_" + to_string(num_maze) + ".txt"; //composing the name of the file according to the number of the chosen maze
 	else filename = "Scoreboard_0" + to_string(num_maze) + ".txt";
 
 	in_stream.open(filename);
 
-    if (!in_stream) {
+    if (!in_stream) { // if the file doesn't exist
 		ofstream newfile;
-		newfile.open(filename);
+		newfile.open(filename);  // this will create it
 		newfile.close();
 	}
 	in_stream.close();
 
 
-	in_stream.open(filename);
+	in_stream.open(filename); // now that the file exists, it can be read
 
     while(getline(in_stream, line)) {
-        if (line[21] == 'e' || line[21] == '-') continue;
-        p_info.name = line.substr(0,15); 
-		p_info.score = stoi(line.substr(18,4), nullptr);
-		score_info.push_back(p_info);
-        line = "                      ";
+        if (line[21] == 'e' || line[21] == '-') continue; // this will ignore the first 2 lines
+        p_info.name = line.substr(0,15); // this slices the first 15 characters, starting at index 0
+		p_info.score = stoi(line.substr(18,4), nullptr); // extracts the score
+		score_info.push_back(p_info); // adds this information to the vector
 	}
 	
-	in_stream.close();
+	in_stream.close(); 
 	
-	// working the player's info
-	bool valid;
-	do {
+	// code to add the player's info to the rest
+	
+	bool valid; // to be used in the do while cycle until the name input is valid  
+	int index = 0; // inicialization of the index
+	
+	do {  // cycle that assures the input is valid
 		valid = true;
 		cout << "Insert name(max 15 characters): ";
-		getline(cin, line);
+		cin >> line;
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');  // in case of the user typing '\t' this cleans the buffer
 
-		if (cin.eof()) {
+		if (cin.eof()) {  // if the user types CTRL-Z the function will not add this game to the scoreboard
 			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			return false;
 		}
 
-		if (line.size() == 0) {
-			cout << "Invalid input(no characters)" << endl;
-			valid = false;
-		}
-		else if (line.size() > 15) {
+		else if (line.size() > 15) {  // if the user types more than 15 characters
 			cout << "Invalid input(too many characters)" << endl;
 			valid = false;
 		}
 
-		line.resize(15,' ');
+		line.resize(15,' '); // aligns the user input with the other players' names
 
-		for (size_t i = 0; i < score_info.size();i++){
+		for (size_t i = 0; i < score_info.size();i++){  // this cycle prevents the user to put a name equal to an already existing name
 			if (score_info[i].name == line) {
 				cout << "Invalid input(already existing name)" << endl;
 				valid = false;
@@ -589,32 +579,28 @@ bool scoreboard(const int num_maze,const int time){
 		}
 	} while (!valid);
 
-	p_info.name = line; 
+	p_info.name = line; // this reuses the generic Player_Info to store the information of the current player
 	p_info.score = time;
 
 	for (size_t i = 0; i < score_info.size(); i++){
-		//if (time == score_info[i].score) {
-		//	if (p_info.name > )
-		//}
-		if (time <= score_info[i].score) {
-			index = i;
-			cout << index << endl;
+		if (time <= score_info[i].score) {  // since the scoreboard is already ordered it only needs to find one score worst
+			index = i;  // the current player will take it's place
 			break;
 		}
 	}
-	score_info.insert(score_info.begin() + index, p_info);
+	score_info.insert(score_info.begin() + index, p_info); 
 	
-	// Rewriting(mostrar ao utilizador tambem)
+	// Rewriting the scoreboard (also showing it to the user)
 	
 	ofstream write_stream;
 
 	write_stream.open(filename);
 
-	write_stream << "Player          - Time\n----------------------";
+	write_stream << "Player          - Time\n----------------------"; 
 
-	for (size_t i = 0; i < score_info.size();i++){
+	for (size_t i = 0; i < score_info.size();i++){ // for each line
 		write_stream << endl;
-		write_stream << fixed << setw(15) << setfill(' ') << left << score_info[i].name;
+		write_stream << fixed << setw(15) << setfill(' ') << left << score_info[i].name; // this formats the information on the scoreboard
 		write_stream << fixed << setw(3) << " - ";
 		write_stream << fixed << setw(4) << setfill(' ') << right << to_string(score_info[i].score);
 	}
@@ -623,53 +609,51 @@ bool scoreboard(const int num_maze,const int time){
 
 	in_stream.open(filename);
     while(getline(in_stream, line)) {
-        cout << endl << line;
+        cout << endl << line; // this shows the user the scoreboard
 	}
 	cout << endl << endl;
 	in_stream.close();
 
-	return true;
+	return true; // means the function was successful
 }
 
 int main()
 {
-	Player player;
-	vector <Robot> robots;
-	vector <Fence> fences;
-	int num_maze;
-	bool win;
-	Maze_Size size_info;
+	Player player;  
+	vector <Robot> robots;  // this will hold all the robots
+	vector <Fence> fences;  // this will hold all the fences
+	int num_maze;  // number id to be chosen by the player
+	bool win; //whether the player wins the game or not
+	Maze_Size size_info;  // information on the number of columns and rows of the maze
 
-	cout << "Hello friends, welcome to the most amazing game you are ever going to play.Are u ready?" << endl;
+	cout << "Hello friends, welcome to the most amazing game you are ever going to play. Are u ready?" << endl; //super oustanding introduction
 
-	while (true) {
-		string filename;
+	while (true) { // this cycle allows the user to play various games even with different mazes
+		string filename; 
 		
-		if (!menu()) break;
+		if (!menu()) break; // if menu returns false it means the player wants to exit the game
 
 		num_maze = chooseMaze();
-		if (num_maze == -1) continue;
+		if (num_maze == -1) continue; // if the user types CTRL-Z this function will return -1, meaning it exits this game and shows the menu
 
 		if (num_maze > 9) filename = "MAZE_" + to_string(num_maze) + ".txt";
 		else filename = "MAZE_0" + to_string(num_maze) + ".txt";
 
-		size_info = readMaze(filename,player,robots,fences);
+		size_info = readMaze(filename,player,robots,fences); 
 		
-		time_t start = time(NULL);
+		time_t start = time(NULL); 
 		win = play(size_info.numcol,size_info.numrow,player,robots,fences);
-		time_t end = time(NULL);
-		int time = difftime(end, start);
+		time_t end = time(NULL); 
+		int time = difftime(end, start); //calculates the game duration
 
-		if(win) {
-			if(!scoreboard(num_maze, time)) continue;
+		if(win) { // in case the player doesn't win the game continues
+			if(!scoreboard(num_maze, time)) continue; // if the user types CTRL-Z this function will return false, meaning it exits this game and shows the menu
 		}
 		
-		player.alive = true;
+		player.alive = true; //resets all information about the previous game
 		robots.clear();
 		fences.clear();
 		
 	}	
 	return 0;
 }
-
-
