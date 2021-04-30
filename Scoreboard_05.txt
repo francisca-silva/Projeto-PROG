@@ -1,5 +1,0 @@
-Player          - Time
-----------------------
-s               -    7
-middle          -   16
-yupiiii         -   31

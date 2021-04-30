@@ -523,8 +523,8 @@ bool scoreboard(const int num_maze,const int time){
 	// code to read the scoreboard file
 	ifstream in_stream;
 
-	if (num_maze > 9) filename = "Scoreboard_" + to_string(num_maze) + ".txt"; //composing the name of the file according to the number of the chosen maze
-	else filename = "Scoreboard_0" + to_string(num_maze) + ".txt";
+	if (num_maze > 9) filename = "MAZE_" + to_string(num_maze) + "_WINNERS.txt"; //composing the name of the file according to the number of the chosen maze
+	else filename = "MAZE_0" + to_string(num_maze) + "_WINNERS.txt";
 
 	in_stream.open(filename);
 

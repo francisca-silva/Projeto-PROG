@@ -1,6 +1,0 @@
-Player          - Time
-----------------------
-hihi            -    8
-ll              -   13
-kkkk            -   14
-francisca       -   17
