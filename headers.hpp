@@ -39,7 +39,7 @@ public:
  void setCol(int y);
  void setPosition(const Position &pos);
  void setAsDead();
- //other methods
+ //other methods 
 private:
  static int robotCounter; //used to attribute automatically the id to the robots
  int id;
@@ -66,7 +66,7 @@ private:
 class Maze {
 public:
  Maze(int numRows, int numCols);
- bool addPost(const Post& post, const Position& position)
+ bool addPost(const Post& post, const Position& position);
  int getnumRows() const;
  int getnumCols() const;
  // other methods
