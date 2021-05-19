@@ -19,17 +19,27 @@ struct Position
  int row, col;
 };
 
+struct Movement
+{
+ int dRow, dCol; // displacement, taking into account the chosen movement
+};
+
 
 class Maze {
 public:
- Maze(int numRows, int numCols);
- bool addPost(const Post& post, const Position& position);
+ Maze();
+ void addPost(const Post& post);
  int getnumRows() const;
  int getnumCols() const;
+ int getnumPosts() const;
+ void setnumCols(int c);
+ void setnumRows(int c);
+ Post getPost(int id);
  // other methods
 private:
  int numRows, numCols;
  vector <vector <char>> maze; //(numRows,vector<char>(numCols))
+ vector <Post>& posts;
  // data structure that represents the posts
 };
 

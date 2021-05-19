@@ -19,8 +19,11 @@ public:
  int getCol() const;
  char getSymbol() const; // get char representation of Post
  bool isElectrified() const;
+ int getID() const;
  //other methods
 private:
+ static int postCounter; //used to attribute automatically the id to the posts
+ int id;
  int row, col;
  char type; // '*' - electrified; '+'- non-electrified
  // other attributes (?)

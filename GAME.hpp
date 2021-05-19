@@ -27,6 +27,8 @@ public:
  bool play(); // implements the game loop; returns true if player wins, false otherwise
  bool isValid();
 private:
+ void NewRobotPosition(Robot& robot);
+ bool NewPlayerPosition();
  void showGameDisplay() const;
  bool collide(Robot& robot, Post& post); // check if robot collided with post (and possibly set it as dead)
  bool collide(Robot& robot, Player& player); // check if human and robot collided (and possibly set human as dead)

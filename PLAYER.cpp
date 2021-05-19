@@ -55,7 +55,7 @@ bool Player::move(Movement delta)
     row += delta.dRow;
     col += delta.dCol;
 
-    validpos = true //FALTA VER SE A POS É VALIDA
+    validpos = true; //FALTA VER SE A POS É VALIDA
 
     return validpos;
 }

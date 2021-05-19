@@ -35,10 +35,5 @@ private:
  // other attributes (?)
 };
 
-Robot::Robot(int row, int col)
-{
-    
-}
-
 
 #endif

@@ -6,6 +6,8 @@ Post::Post(int r, int c, char t)
     row = r;
     col = c;
     type = t;
+    postCounter = 0;
+    id = ++postCounter;
 }
 
 inline int Post::getRow() const
@@ -21,6 +23,11 @@ inline int Post::getCol() const
 inline char Post::getSymbol() const
 {
     return type;
+}
+
+int Post::getID() const
+{
+    return id;
 }
 
 inline bool Post::isElectrified() const
