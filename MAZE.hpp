@@ -14,16 +14,6 @@
 #ifndef MAZE_H
 #define MAZE_H
 
-struct Position
-{
- int row, col;
-};
-
-struct Movement
-{
- int dRow, dCol; // displacement, taking into account the chosen movement
-};
-
 
 class Maze {
 public:
@@ -39,7 +29,7 @@ public:
 private:
  int numRows, numCols;
  vector <vector <char>> maze; //(numRows,vector<char>(numCols))
- vector <Post>& posts;
+ vector <Post> posts;
  // data structure that represents the posts
 };
 

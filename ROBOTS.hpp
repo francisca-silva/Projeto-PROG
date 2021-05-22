@@ -12,6 +12,11 @@
 #ifndef ROBOTS_H
 #define ROBOTS_H
 
+struct Position
+{
+ int row, col;
+};
+
 class Robot {
 public:
  enum State { ALIVE, STUCK, DEAD };

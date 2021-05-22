@@ -64,7 +64,7 @@ Then it shows the vector on the screen
 void drawMaze(const int numcol, const int numrow, Player& player, vector <Robot>& robots, vector <Fence>& fences);
 
 
-/** DONEEEE
+/** 
 Plays one game using the choosen maze.
 @param numcol - number of columns
 @param numrow - number of rows

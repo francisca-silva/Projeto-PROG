@@ -11,12 +11,7 @@
 
 #include "PLAYER.hpp"
 
-struct Movement
-{
- int dRow, dCol; // displacement, taking into account the chosen movement
-};
-
-
+/*
 Player::Player(int r, int c, char s)
 {
     row = r;
@@ -24,6 +19,14 @@ Player::Player(int r, int c, char s)
     symbol = s;
     alive = true;
 }
+*/
+
+Player::Player()
+{
+    alive = true;
+    symbol = 'H';
+}
+
 
 inline int Player::getRow() const
 {
@@ -48,14 +51,24 @@ inline bool Player::isAlive() const
 inline void Player::setAsDead()
 {
     alive = false;
+    symbol = 'h';
 }
 
-bool Player::move(Movement delta)
+void Player::move(Movement delta)
 {
     row += delta.dRow;
     col += delta.dCol;
+}
 
-    validpos = true; //FALTA VER SE A POS É VALIDA
+void Player::setPosition(int r, int c)
+{
+    row = r;
+    col = c;
+}
 
-    return validpos;
+
+
+void Player::setSymbol(char s)
+{
+    symbol = s;
 }

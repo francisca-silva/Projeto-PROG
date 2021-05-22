@@ -1,10 +1,12 @@
+/*
+
 // PARTIAL DEFINITION OF SOME CLASSES/STRUCTS FOR THE DEVELOPMENT OF THE 2ND PROJECT (ROBOT GAME)
 ///////////////////////////////////////////////////////////////////////////////
 struct Movement
 {
  int dRow, dCol; // displacement, taking into account the chosen movement
 };
-///////////////////////////////////////////////////////////////////////////////
+
 struct Position
 {
  int row, col;
@@ -97,3 +99,6 @@ private:
  vector<Robot> robots;
  //other attributes
 };
+
+
+*/

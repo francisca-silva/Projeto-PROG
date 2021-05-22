@@ -11,6 +11,11 @@
 
 #include "ROBOTS.hpp"
 
+struct Position
+{
+ int row, col;
+};
+
 class Robot {
 public:
  enum State { ALIVE, STUCK, DEAD };

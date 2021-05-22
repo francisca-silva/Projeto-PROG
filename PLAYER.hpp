@@ -12,15 +12,23 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+struct Movement
+{
+ int dRow, dCol; // displacement, taking into account the chosen movement
+};
+
 class Player {
 public:
- Player(int row, int col, char symbol);
+ //Player(int row, int col, char symbol);
+ Player();
  int getRow() const;
  int getCol() const;
  char getSymbol() const;
  bool isAlive() const;
  void setAsDead();
- bool move(Movement delta);
+ void move(Movement delta);
+ void setPosition(int row, int col);
+ void setSymbol(char symbol);
 private:
  int row, col;
  bool alive;

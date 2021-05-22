@@ -1,55 +1,15 @@
-#include <iostream>
-#include <cmath>
-#include <cctype>
-#include <iomanip>
-#include <ctime>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <ios>
-#include <limits>
-
 using namespace std;
 
 #include "GAME.hpp"
-#include "PLAYER_H.hpp"
+#include "PLAYER.hpp"
 #include "ROBOTS.hpp"
 #include "POST.hpp"
 #include "MAZE.hpp"
 
-struct Movement
-{
- int dRow, dCol; // displacement, taking into account the chosen movement
-};
-
-class Game {
-public:
- Game(const string &filename);
- // This constructor should initialize the Maze, the vector of Robots, and the Player,
- // using the chars read from the file
- bool play(); // implements the game loop; returns true if player wins, false otherwise
- bool isValid();
-private:
- void showGameDisplay() const;
- bool collide(Robot& robot, Post& post); // check if robot collided with post (and possibly set it as dead)
- bool collide(Robot& robot, Player& player); // check if human and robot collided (and possibly set human as dead)
- void NewRobotPosition(Robot& robot);
- // other methods, for example:
-
- // to check if player is trying to move to a valid place
- // to apply a valid play and check collisions
- // to check if two robots collide (and possibly set them as dead)
- // etc.
-private:
- Maze maze;
- Player player;
- vector<Robot> robots;
- //other attributes
-};
-
 
 Game::Game(const string &filename)
 {
+
     ifstream in_stream; // stream that reads the contents of the chosen file 
 	string row;  // to store the value of each row at a time
 	//Maze_Size size_info;  // used at the end to return the proportions of the maze
@@ -67,7 +27,9 @@ Game::Game(const string &filename)
 			switch (object)
 			{
 			case 'H': 
-				player = Player(maze.getnumRows(), maze.getnumCols(), 'H');
+                player.setPosition(maze.getnumRows(), maze.getnumCols());
+                //player.setSymbol('H');
+				//this->player = Player(maze.getnumRows(), maze.getnumCols(), 'H');
 				break;
 
 			case 'R': 
@@ -94,6 +56,11 @@ Game::Game(const string &filename)
 
 }
 
+
+Game::~Game() 
+{
+    
+}
 
 
 bool Game::play()
@@ -132,10 +99,10 @@ bool Game::play()
 
 bool Game::isValid()
 {
-    
+    return true;
 }
 
-void Game::showGameDisplay() const
+void Game::showGameDisplay() // TIRAMOS O CONST ISSO TEM PROBLEMA?
 {
     vector <vector <char>> maze_(maze.getnumRows(),vector<char>(maze.getnumCols())); // this vector will be written in each function call
 
@@ -165,6 +132,7 @@ void Game::showGameDisplay() const
 	}
 }
 
+/*
 bool Game::collide(Robot& robot, Post& post)
 {
     return true;
@@ -174,7 +142,7 @@ bool Game::collide(Robot& robot, Player& player)
 {
     return true;
 }
-
+*/
 
 void Game::NewRobotPosition(Robot& robot)
 {
@@ -194,7 +162,7 @@ void Game::NewRobotPosition(Robot& robot)
     robot.setRow(newPos[min_index][0]);  // stores the new position of the robot
     robot.setCol(newPos[min_index][1]);
     
-    for (size_t i = 0; i < maze.getnumPosts(); i++) {      // checks if the robot collides with the fence
+    for (int i = 0; i < maze.getnumPosts(); i++) {      // checks if the robot collides with the fence
         if (maze.getPost(i).getRow() == robot.getRow() && maze.getPost(i).getCol() == robot.getCol()){  
             robot.setAsDead();  // in case of collision, the robot dies
             break;
@@ -219,12 +187,10 @@ bool Game::NewPlayerPosition()
 {
     char input;   // this will store the key pressed by the player(to determine the next position)
     bool valid = false;  // used to check if the input is valid depending on the possible positions
-    int last_pos_i, last_pos_j;
+    Movement mov;
+    
     
     while (!valid){    //this cycle only ends when the player chooses a valid position
-
-        last_pos_i = player.getRow();
-        last_pos_j = player.getCol();
 
         cout << "Please choose one of the following positions:\n Q W E \n A S D \n Z X C" << endl;
         cin >> input;
@@ -238,35 +204,29 @@ bool Game::NewPlayerPosition()
 
         switch (toupper(input)){  // calculates the new player position
             case 'Q': 
-                pos_i += -1;  // depending on the key, this will change the position
-                pos_j += -1;
-                Movement m = {-1,-1};
-                valid = player.move(m);
+                mov = {-1,-1};
                 break;
             case 'W': 
-                pos_i += -1;
+                mov = {-1,0};
                 break;
             case 'E':
-                pos_i += -1;
-                pos_j += 1;
+                mov = {-1,1};
                 break;
             case 'A':
-                pos_j += -1;
+                mov = {0,-1};
                 break;
             case 'S': break;
             case 'D': 
-                pos_j += 1;
+                mov = {0,1};
                 break;
             case 'Z': 
-                pos_i += 1;
-                pos_j += -1;
+                mov = {1,-1};
                 break;
             case 'X': 
-                pos_i += 1;
+                mov = {1,0};
                 break;
             case 'C': 
-                pos_i += 1;
-                pos_j += 1;
+                mov = {1,1};
                 break;
             default:
                 cout << "Invalid input" << endl << endl;
@@ -274,17 +234,127 @@ bool Game::NewPlayerPosition()
                 break;
         }
 
+        player.move(mov);
+
         cin.ignore(numeric_limits<streamsize>::max(),'\n');  // ignores any other input besides the first character(if the first is valid the rest is just ignored)
 
-        for (size_t i = 0; i < fences.size(); i++) {  // warns the player if he goes against any fence
-            if (fences[i].pos_i == pos_i && fences[i].pos_j == pos_j){
-                cout << "Invalid input(can't go to fence)" << endl << endl;
+        for (int i = 0; i < maze.getnumPosts(); i++) {  // warns the player if he goes against any fence
+            if (maze.getPost(i).getRow() == player.getRow() && maze.getPost(i).getCol() == player.getCol()){
+                cout << "Invalid input(can't go to post)" << endl << endl;
                 valid = false;
-                pos_i = last_pos_i;  // resets the position for the next cycle iteration
-                pos_j = last_pos_j;
+                player.move({-mov.dRow, -mov.dCol});   // resets the position for the next cycle iteration
                 break;
             }
         }
     }
     return true; // means the function was successful
 }
+
+bool Game::scoreboard(const int num_maze,const int time)
+{
+	struct Player_Info{
+	string name;  //players' name and the time it took to complete the maze
+	int score;
+};
+
+    vector <Player_Info> score_info; // this vector will hold all previous player information
+    Player_Info p_info; // generic Player_Info to help fill the vector and eventually the current user's information
+	string filename, line; // name of the file to be accessed and each line of it
+
+	// code to read the scoreboard file
+	ifstream in_stream;
+
+	if (num_maze > 9) filename = "MAZE_" + to_string(num_maze) + "_WINNERS.txt"; //composing the name of the file according to the number of the chosen maze
+	else filename = "MAZE_0" + to_string(num_maze) + "_WINNERS.txt";
+
+	in_stream.open(filename);
+
+    if (!in_stream) { // if the file doesn't exist
+		ofstream newfile;
+		newfile.open(filename);  // this will create it
+		newfile.close();
+	}
+	in_stream.close();
+
+
+	in_stream.open(filename); // now that the file exists, it can be read
+
+    while(getline(in_stream, line)) {
+        if (line[21] == 'e' || line[21] == '-') continue; // this will ignore the first 2 lines
+        p_info.name = line.substr(0,15); // this slices the first 15 characters, starting at index 0
+		p_info.score = stoi(line.substr(18,4), nullptr); // extracts the score
+		score_info.push_back(p_info); // adds this information to the vector
+	}
+	
+	in_stream.close(); 
+	
+	// code to add the player's info to the rest
+	
+	bool valid; // to be used in the do while cycle until the name input is valid  
+	int index = 0; // inicialization of the index
+	
+	do {  // cycle that assures the input is valid
+		valid = true;
+		cout << "Insert name(max 15 characters): ";
+		cin >> line;
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');  // in case of the user typing '\t' this cleans the buffer
+
+		if (cin.eof()) {  // if the user types CTRL-Z the function will not add this game to the scoreboard
+			cin.clear();
+			return false;
+		}
+
+		else if (line.size() > 15) {  // if the user types more than 15 characters
+			cout << "Invalid input(too many characters)" << endl;
+			valid = false;
+		}
+
+		line.resize(15,' '); // aligns the user input with the other players' names
+
+		for (size_t i = 0; i < score_info.size();i++){  // this cycle prevents the user to put a name equal to an already existing name
+			if (score_info[i].name == line) {
+				cout << "Invalid input(already existing name)" << endl;
+				valid = false;
+				break;
+			}
+		}
+	} while (!valid);
+
+	p_info.name = line; // this reuses the generic Player_Info to store the information of the current player
+	p_info.score = time;
+
+	for (size_t i = 0; i < score_info.size(); i++){
+		if (time <= score_info[i].score) {  // since the scoreboard is already ordered it only needs to find one score worst
+			index = i;  // the current player will take it's place
+			break;
+		}
+	}
+	score_info.insert(score_info.begin() + index, p_info); 
+	
+	// Rewriting the scoreboard (also showing it to the user)
+	
+	ofstream write_stream;
+
+	write_stream.open(filename);
+
+	write_stream << "Player          - Time\n----------------------"; 
+
+	for (size_t i = 0; i < score_info.size();i++){ // for each line
+		write_stream << endl;
+		write_stream << fixed << setw(15) << setfill(' ') << left << score_info[i].name; // this formats the information on the scoreboard
+		write_stream << fixed << setw(3) << " - ";
+		write_stream << fixed << setw(4) << setfill(' ') << right << to_string(score_info[i].score);
+	}
+
+	write_stream.close();
+
+	in_stream.open(filename);
+    while(getline(in_stream, line)) {
+        cout << endl << line; // this shows the user the scoreboard
+	}
+	cout << endl << endl;
+	in_stream.close();
+
+	return true; // means the function was successful
+}
+
