@@ -8,6 +8,7 @@
         "vector": "cpp",
         "ostream": "cpp",
         "typeinfo": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "cctype": "cpp"
     }
 }
