@@ -166,7 +166,7 @@ void Game::NewRobotPosition(Robot& robot)
     }
 
     for (size_t i = 0; i < robots.size(); i++) {  // check if collides with another robot
-        if (robots[i].getID() && robots[i].getRow() == robot.getRow() && robots[i].getCol() == robot.getCol()) {
+        if (robots[i].getID() != robot.getID() && robots[i].getRow() == robot.getRow() && robots[i].getCol() == robot.getCol()) {
             robot.setAsDead();  
             robots[i].setAsDead();  // if it collides, both die
             break;
