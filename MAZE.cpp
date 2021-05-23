@@ -21,36 +21,36 @@ Maze::Maze()
 
 void Maze::addPost(const Post& post)
 {
-    posts.pushback(post);
+    posts.push_back(post);
 }
 
-inline int Maze::getnumRows() const
+int Maze::getnumRows() const
 {
     return numRows;
 }
 
-inline int Maze::getnumCols() const
+int Maze::getnumCols() const
 {
     return numCols;
 }
 
-inline void Maze::setnumCols(int c)
+void Maze::setnumCols(int c)
 {
     numCols = c;
 } 
 
-inline void Maze::setnumRows(int d)
+void Maze::setnumRows(int d)
 {
     numRows = d;
 }
 
 
-inline Post Maze::getPost(int id)
+Post Maze::getPost(int id)
 {
     return posts[id];
 }
 
-inline int Maze::getnumPosts() const
+int Maze::getnumPosts() const
 {
     return posts.size();
 }

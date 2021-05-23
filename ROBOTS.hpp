@@ -1,3 +1,6 @@
+#ifndef ROBOTS_H
+#define ROBOTS_H
+
 #include <iostream>
 #include <cmath>
 #include <cctype>
@@ -9,8 +12,7 @@
 #include <ios>
 #include <limits>
 
-#ifndef ROBOTS_H
-#define ROBOTS_H
+using namespace std;
 
 struct Position
 {

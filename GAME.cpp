@@ -1,10 +1,6 @@
 using namespace std;
 
 #include "GAME.hpp"
-#include "PLAYER.hpp"
-#include "ROBOTS.hpp"
-#include "POST.hpp"
-#include "MAZE.hpp"
 
 
 Game::Game(const string &filename)

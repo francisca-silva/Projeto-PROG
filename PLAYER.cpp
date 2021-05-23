@@ -1,14 +1,3 @@
-#include <iostream>
-#include <cmath>
-#include <cctype>
-#include <iomanip>
-#include <ctime>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <ios>
-#include <limits>
-
 #include "PLAYER.hpp"
 
 /*
@@ -28,27 +17,27 @@ Player::Player()
 }
 
 
-inline int Player::getRow() const
+int Player::getRow() const
 {
     return row;
 }
 
-inline int Player::getCol() const
+int Player::getCol() const
 {
     return col;
 }
 
-inline char Player::getSymbol() const
+char Player::getSymbol() const
 {
     return symbol;
 }
 
-inline bool Player::isAlive() const
+bool Player::isAlive() const
 {
     return alive;
 }
 
-inline void Player::setAsDead()
+void Player::setAsDead()
 {
     alive = false;
     symbol = 'h';

@@ -9,12 +9,6 @@
 #include <ios>
 #include <limits>
 
-
-
-#include "PLAYER.hpp"
-#include "ROBOTS.hpp"
-#include "POST.hpp"
-#include "MAZE.hpp"
 #include "GAME.hpp"
 
 using namespace std;

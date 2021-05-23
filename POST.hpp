@@ -1,3 +1,6 @@
+#ifndef POST_H
+#define POST_H
+
 #include <iostream>
 #include <cmath>
 #include <cctype>
@@ -8,9 +11,6 @@
 #include <fstream>
 #include <ios>
 #include <limits>
-
-#ifndef POST_H
-#define POST_H
 
 class Post {
 public:
