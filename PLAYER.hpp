@@ -1,14 +1,3 @@
-#include <iostream>
-#include <cmath>
-#include <cctype>
-#include <iomanip>
-#include <ctime>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <ios>
-#include <limits>
-
 #ifndef PLAYER_H
 #define PLAYER_H
 
@@ -19,7 +8,6 @@ struct Movement
 
 class Player {
 public:
- //Player(int row, int col, char symbol);
  Player();
  int getRow() const;
  int getCol() const;

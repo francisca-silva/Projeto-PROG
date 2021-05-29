@@ -2,48 +2,59 @@ using namespace std;
 
 #include "GAME.hpp"
 
-
 Game::Game(const string &filename)
 {
-
     ifstream in_stream; // stream that reads the contents of the chosen file 
 	string row;  // to store the value of each row at a time
 	//Maze_Size size_info;  // used at the end to return the proportions of the maze
+	int NumRow, NumCol;
+	char object;
+
+	valid = true;
 
 	cout << endl << filename << endl; //prints the name of the maze
 
 	in_stream.open(filename);
 
+	in_stream >> NumRow >> object >> NumCol;
+	getline(in_stream, row); //to remove the first '\n'
+
+	maze = Maze(NumRow,NumCol);
+
+	NumRow = 0;
+	
 	while (getline(in_stream, row)) { // cycle that analyses the maze, collecting its different elements from line to line
-		
-		maze.setnumCols(0); // starts as 0 in every iteration of the while cycle
-		char object = row[maze.getnumCols()];  // used to store the value of each space in the maze
+
+		NumCol = 0;
+		object = row[NumCol];  // used to store the value of each space in the maze
 
 		do {  // until the last element of each line
 			switch (object)
 			{
 			case 'H': 
-                player.setPosition(maze.getnumRows(), maze.getnumCols());
-                //player.setSymbol('H');
-				//this->player = Player(maze.getnumRows(), maze.getnumCols(), 'H');
+                player.setPosition(NumRow, NumCol);
 				break;
-
 			case 'R': 
-				robots.push_back(Robot(maze.getnumRows(),maze.getnumCols()));  // adds the robot to the vector
+				robots.push_back(Robot(NumRow,NumCol));  // adds the robot to the vector
 				break;
-				
 			case '*': case '+':
-                maze.addPost(Post(maze.getnumRows(),maze.getnumCols(),object)); // and adds it to the vector of Fences
+                maze.addPost(Post(NumRow,NumCol,object)); // and adds it to the vector of Fences
+				break;
+			case 'O':
+				gates.push_back(Gate(NumRow,NumCol));  // adds the gate to the vector
+				break;
+			case 'h': case 'r':
+				valid = false;
 				break;
 			default: // if it is ' ' it is ignored
 				break;
 			}
-			maze.setnumCols(maze.getnumCols()+1);  //increments the number of columns
-			object = row[maze.getnumCols()];  // reads the next element
+			NumCol++; //increments the number of columns
+			object = row[NumCol];  // reads the next element
 
 		} while (object != '\0'); // repeats until the end of the string
 
-		maze.setnumRows(maze.getnumRows()+1); //increments the number of rows
+		NumRow++; //increments the number of rows
 	} 
 	
 	in_stream.close(); 
@@ -61,12 +72,10 @@ Game::~Game()
 
 bool Game::play()
 {
-    bool alldead; // to check if all of the robots are dead
+	int cont;
 
 	while (true){  // plays until the function returns true or false depending on the output
 
-		alldead = true; //assuming all robots are dead
-	
 		showGameDisplay(); // call to function in order to draw the chosen maze
 
 		if (!player.isAlive()) {
@@ -74,28 +83,30 @@ bool Game::play()
 			return false;  
 		}
 		
-		if (!NewPlayerPosition()) return false; // this function's purpose is to move the player but if the user typed CTRL-Z it immediately ends the play() function and returns false
+		cont = NewPlayerPosition();
+
+		if (cont == -1) return false; // this function's purpose is to move the player but if the user typed CTRL-Z it immediately ends the play() function and returns false
 		
+		if (cont == 1) { 
+			showGameDisplay(); // shows the final maze before leaving the function
+			cout << "You won!!" << endl <<endl;
+			return true;  // this true will call the scoreboad() function to add the player's name and score
+		}
 
 		for (size_t i = 0; i < robots.size(); i++){  // moves each robot 
 			
 			if (robots[i].isAlive()) NewRobotPosition(robots[i]);
 				
 		}  
-		
-		for (size_t i = 0; i < robots.size(); i++) if (robots[i].isAlive()) alldead = false;  // if any robot is still alive then they're not all dead
-
-		if (alldead) {
-			showGameDisplay(); // shows the final maze before leaving the function
-			cout << "You won!!" << endl <<endl;
-			return true;  // this true will call the scoreboad() function to add the player's name and score
-		}
 	}
 } // implements the game loop; returns true if player wins, false otherwise
 
 bool Game::isValid()
 {
-    return true;
+	if (gates.size() == 0) valid = false;
+	else if (player.getRow() == -1) valid = false;
+
+	return valid;
 }
 
 void Game::showGameDisplay() // TIRAMOS O CONST ISSO TEM PROBLEMA?
@@ -114,6 +125,10 @@ void Game::showGameDisplay() // TIRAMOS O CONST ISSO TEM PROBLEMA?
 	for (size_t i = 0; i < robots.size(); i++) {  // if any robot dies because of a fence, it is written on top of it(and the fence disappears)
 		if (robots[i].isAlive()) maze_[robots[i].getRow()][robots[i].getCol()] = 'R';
 		else maze_[robots[i].getRow()][robots[i].getCol()] = 'r';
+	}
+
+	for (size_t i = 0; i < gates.size(); i++) { 
+		maze_[gates[i].getRow()][gates[i].getCol()] = 'O';
 	}
 	
 	if (player.isAlive()) maze_[player.getRow()][player.getCol()] = 'H'; // lastly if the player is dead because of a robot(in the same position) it is written on top of it
@@ -142,6 +157,8 @@ bool Game::collide(Robot& robot, Player& player)
 
 void Game::NewRobotPosition(Robot& robot)
 {
+	Position last_pos = {robot.getRow(),robot.getCol()};
+
     int newPos[9][2] = {{robot.getRow()-1,robot.getCol()-1},{robot.getRow()-1,robot.getCol()},{robot.getRow()-1,robot.getCol()+1},{robot.getRow(),robot.getCol()-1}, {robot.getRow(),robot.getCol()}, 
                         {robot.getRow(),robot.getCol()+1},{robot.getRow()+1,robot.getCol()-1},{robot.getRow()+1,robot.getCol()},{robot.getRow()+1,robot.getCol()+1}};   // this is an easy way to calculate the possible positions for each robot
 
@@ -160,7 +177,20 @@ void Game::NewRobotPosition(Robot& robot)
     
     for (int i = 0; i < maze.getnumPosts(); i++) {      // checks if the robot collides with the fence
         if (maze.getPost(i).getRow() == robot.getRow() && maze.getPost(i).getCol() == robot.getCol()){  
-            robot.setAsDead();  // in case of collision, the robot dies
+			if(maze.getPost(i).isElectrified()) {
+				robot.setRow(last_pos.row);
+				robot.setCol(last_pos.col);
+			}
+			robot.setAsDead();  // in case of collision, the robot dies
+			break;	
+        }
+    }
+
+	for (int i = 0; i < gates.size(); i++) {      // checks if the robot collides with the fence
+        if (gates[i].getRow() == robot.getRow() && gates[i].getCol() == robot.getCol()){ 
+			robot.setRow(last_pos.row);
+			robot.setCol(last_pos.col);
+			robot.setAsDead();
             break;
         }
     }
@@ -179,12 +209,11 @@ void Game::NewRobotPosition(Robot& robot)
 	
 }
 
-bool Game::NewPlayerPosition()
+int Game::NewPlayerPosition()
 {
     char input;   // this will store the key pressed by the player(to determine the next position)
     bool valid = false;  // used to check if the input is valid depending on the possible positions
     Movement mov;
-    
     
     while (!valid){    //this cycle only ends when the player chooses a valid position
 
@@ -195,7 +224,7 @@ bool Game::NewPlayerPosition()
         if (cin.eof()) {  //checks if the player wants to exit this game
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(),'\n');
-            return false;  // means the user wants to leave the game
+            return -1;  // means the user wants to leave the game
         }
 
         switch (toupper(input)){  // calculates the new player position
@@ -211,7 +240,9 @@ bool Game::NewPlayerPosition()
             case 'A':
                 mov = {0,-1};
                 break;
-            case 'S': break;
+            case 'S': 
+				mov = {0,0};
+				break;
             case 'D': 
                 mov = {0,1};
                 break;
@@ -236,14 +267,38 @@ bool Game::NewPlayerPosition()
 
         for (int i = 0; i < maze.getnumPosts(); i++) {  // warns the player if he goes against any fence
             if (maze.getPost(i).getRow() == player.getRow() && maze.getPost(i).getCol() == player.getCol()){
-                cout << "Invalid input(can't go to post)" << endl << endl;
-                valid = false;
-                player.move({-mov.dRow, -mov.dCol});   // resets the position for the next cycle iteration
-                break;
+				player.move({-mov.dRow, -mov.dCol});   // resets the position for the next cycle iteration
+				if(maze.getPost(i).isElectrified()) {
+					player.setAsDead();
+				}
+				else {
+					cout << "Invalid input(can't go to post)" << endl << endl;
+					valid = false;
+					break;
+				}
             }
         }
+
+		for (size_t i = 0; i < robots.size(); i++) { 
+			if (robots[i].getRow() == player.getRow() && robots[i].getCol() == player.getCol()) {
+				if(robots[i].isAlive()){
+					//FALTA ISTO
+				}
+				else {
+					player.move({-mov.dRow, -mov.dCol});
+					cout << "Invalid input(can't go to dead/stuck robot)" << endl << endl;
+					valid = false;
+					break;
+				}
+			}
+		}
+
+		for (size_t i = 0; i < gates.size(); i++){
+			if (gates[i].getRow() == player.getRow() && gates[i].getCol() == player.getCol()) return 1;
+		}
+
     }
-    return true; // means the function was successful
+    return 0; // means the player didn't win
 }
 
 bool Game::scoreboard(const int num_maze,const int time)
@@ -251,7 +306,7 @@ bool Game::scoreboard(const int num_maze,const int time)
 	struct Player_Info{
 	string name;  //players' name and the time it took to complete the maze
 	int score;
-};
+	};
 
     vector <Player_Info> score_info; // this vector will hold all previous player information
     Player_Info p_info; // generic Player_Info to help fill the vector and eventually the current user's information

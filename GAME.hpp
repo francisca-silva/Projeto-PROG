@@ -1,3 +1,6 @@
+#ifndef GAME_H
+#define GAME_H
+
 #include <iostream>
 #include <cmath>
 #include <cctype>
@@ -15,10 +18,7 @@ using namespace std;
 #include "ROBOTS.hpp"
 #include "POST.hpp"
 #include "MAZE.hpp"
-
-#ifndef GAME_H
-#define GAME_H
-
+#include "GATE.hpp"
 
 class Game {
 public:
@@ -27,11 +27,11 @@ public:
  // This constructor should initialize the Maze, the vector of Robots, and the Player,
  // using the chars read from the file
  bool play(); // implements the game loop; returns true if player wins, false otherwise
- bool isValid();   //WHAT IS THIS FOR???
+ bool isValid();
  bool scoreboard(const int num_maze,const int time);
 private:
  void NewRobotPosition(Robot& robot);
- bool NewPlayerPosition();
+ int NewPlayerPosition();
  void showGameDisplay();
  //bool collide(Robot& robot, Post& post); // check if robot collided with post (and possibly set it as dead)
  //bool collide(Robot& robot, Player& player); // check if human and robot collided (and possibly set human as dead)
@@ -41,9 +41,11 @@ private:
  // to check if two robots collide (and possibly set them as dead)
  // etc.
 private:
+ bool valid;
  Maze maze;
  Player player;
  vector<Robot> robots;
+ vector<Gate> gates;
  //other attributes
 };
 

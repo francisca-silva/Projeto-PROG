@@ -1,13 +1,13 @@
 #include "ROBOTS.hpp"
 
-int Robot::robotCounter = 0;
+int Robot::robotCounter = 1;
 
 Robot::Robot(int row, int col)
 {
     this -> row = row;
     this -> col = col;
     alive = true;
-    //0State = ALIVE;
+    //State = ALIVE;
     id = ++robotCounter;
 }
 
@@ -18,9 +18,8 @@ int Robot::getID() const
 
 char Robot::getSymbol() const
 {
-    if(STUCK) return 'R' ;
     if (alive) return 'R';
-    else return 'r';
+    return 'r';
 } // get char representation of robot (R if alive, r if dead)
 
 int Robot::getRow() const
@@ -35,14 +34,12 @@ int Robot::getCol() const
 
 Position Robot::getPosition() const
 {
-    //Position p = {row, col};
     return {row, col};
 }
 
 bool Robot::isAlive() const
 {
-    if(alive) return true;
-    else return false;
+    return alive;
 }
 
 void Robot::setRow(int x)

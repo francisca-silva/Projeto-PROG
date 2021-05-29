@@ -1,19 +1,10 @@
 #include "PLAYER.hpp"
 
-/*
-Player::Player(int r, int c, char s)
-{
-    row = r;
-    col = c;
-    symbol = s;
-    alive = true;
-}
-*/
-
 Player::Player()
 {
     alive = true;
     symbol = 'H';
+    row = -1;
 }
 
 

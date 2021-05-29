@@ -1,14 +1,3 @@
-#include <iostream>
-#include <cmath>
-#include <cctype>
-#include <iomanip>
-#include <ctime>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <ios>
-#include <limits>
-
 #include "GAME.hpp"
 
 using namespace std;
@@ -37,6 +26,8 @@ int chooseMaze() {
 			valid = false;
 		}
 		cin.ignore(numeric_limits<streamsize>::max(), '\n'); //ignores everything other than the first character
+
+		if (number == 0) return -1;
 
 		if (valid) {  // checks if the file exists
 			if (number > 9) filename = "MAZE_" + to_string(number) + ".txt"; // if more than 10 mazes were made this would access them
@@ -74,23 +65,50 @@ int chooseMaze() {
 
 
 void rules() {
-	cout << "The player is placed in maze of high-voltage fences and posts.There are also some interceptor robots that will try to destroy the player." <<
-		"If the player touches the maze or any of these robots, that is the end of the game." <<
-		"The robots are also destroyed when they touch the fences / post or when they collide with each other." <<
-		"Every time the player moves in any direction(horizontally, vertically, or diagonally) to a contiguous cell, each robot moves one cell closer to the new player's location, in whichever direction is the shortest path." <<
-		"The robots have no  vision sensors but they have an accurate odour sensor that allows them to follow the player!" <<
-		"There is one hope : make the robots hit the maze or each other. If all of them are destroyed, the player wins !!" << endl;
+	
+	ifstream in_stream;
+	string line;
+
+	in_stream.open("RULES.txt");
+
+	while(getline(in_stream,line)) cout << line << endl;
+
+	in_stream.close();
+
+}
+
+void Show_Scoreboard(const int num_maze)
+{
+	string filename, line; // name of the file to be accessed and each line of it
+	ifstream in_stream;
+
+	if (num_maze > 9) filename = "MAZE_" + to_string(num_maze) + "_WINNERS.txt"; //composing the name of the file according to the number of the chosen maze
+	else filename = "MAZE_0" + to_string(num_maze) + "_WINNERS.txt";
+
+	in_stream.open(filename);
+
+    if (!in_stream) { // if the file doesn't exist
+		cout << "Empty list." << endl;
+	}
+
+	while(getline(in_stream, line)) cout << line << endl;
+
+	in_stream.close();
+
 }
 
 
 bool menu() {
 	char input;  // stores the value choosen by the player
+	bool valid = false;
 
 	while (true) {  // Shows the menu
+		
 		cout << "1) Rules" << endl;
-		cout << "2) Play " << endl;
+		cout << "2) Play" << endl;
+		cout << "3) Winners" << endl;
 		cout << "0) Exit;" << endl;
-
+		
 		cin >> input;
 	
 		cin.ignore(numeric_limits<streamsize>::max(), '\n'); // ignores anything other than the first character
@@ -102,6 +120,34 @@ bool menu() {
 			break;
 		case '2':
 			return true;
+		case '3':
+			int numberofmaze;
+			valid = false;
+			
+			while(!valid){
+				
+				valid = true;
+				cout << "Please choose the number of the maze to see the respective scoreboard of winners: " <<endl;
+				cin >> numberofmaze;
+				cout << endl;
+
+				if (cin.eof()) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	
+					break;
+				}
+				if (cin.fail()) {  // if the input is not an integer number, the cycle produces an error message 
+					cin.clear();
+					cout << "Invalid input(not an integer)." << endl << endl;
+					valid = false;
+				}
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			}
+
+			Show_Scoreboard(numberofmaze);
+			cout << endl;
+			break;
 		case '0':
 			return false;
 		default:
@@ -131,7 +177,13 @@ int main()
 		if (num_maze > 9) filename = "MAZE_" + to_string(num_maze) + ".txt";
 		else filename = "MAZE_0" + to_string(num_maze) + ".txt";
 
-        Game game(filename);
+		Game game(filename);
+
+		if (!game.isValid()){
+			cout << "This maze is not valid!" << endl;
+			cout <<endl;
+			continue;
+		}
 		
 		time_t start = time(NULL); 
 		win = game.play();

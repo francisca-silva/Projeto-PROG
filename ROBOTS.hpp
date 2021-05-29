@@ -1,17 +1,6 @@
 #ifndef ROBOTS_H
 #define ROBOTS_H
 
-#include <iostream>
-#include <cmath>
-#include <cctype>
-#include <iomanip>
-#include <ctime>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <ios>
-#include <limits>
-
 using namespace std;
 
 struct Position
