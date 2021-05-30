@@ -1,3 +1,4 @@
+//T04_G12
 #include "GAME.hpp"
 
 using namespace std;
@@ -93,6 +94,8 @@ void rules() {
 	in_stream.open("RULES.txt");
 
 	while(getline(in_stream,line)) cout << line << endl;
+
+	cout << endl;
 
 	in_stream.close();
 

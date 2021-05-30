@@ -23,5 +23,5 @@ H = player (alive); h = player (dead);
 R = robot (alive); r = robot (destroyed=dead/stuck); 
 
 
-The player can exit the game at any moment by typing CTRL-Z, in Windows, or CTRL-D, in Linux.
+The player can exit to the initial menu at any moment by typing CTRL-Z, in Windows, or CTRL-D, in Linux.
 Good luck! :D

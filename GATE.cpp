@@ -1,5 +1,5 @@
+//T04_G12
 #include "GATE.hpp"
-
 
 Gate::Gate(int r, int c)
 {
