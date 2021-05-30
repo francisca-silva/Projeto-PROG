@@ -16,7 +16,6 @@ public:
  void setAsDead();
  void move(Movement delta);
  void setPosition(int row, int col);
- void setSymbol(char symbol);
 private:
  int row, col;
  bool alive;

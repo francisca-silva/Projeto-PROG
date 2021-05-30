@@ -7,7 +7,6 @@
 
 using namespace std;
 
-
 class Maze {
 public:
  Maze();
@@ -17,10 +16,8 @@ public:
  int getnumCols() const;
  int getnumPosts() const;
  Post getPost(int id);
- // other methods
 private:
  int numRows, numCols;
- vector <vector <char>> maze;
  vector <Post> posts;
 };
 

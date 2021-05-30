@@ -1,5 +1,6 @@
 #include "GATE.hpp"
 
+
 Gate::Gate(int r, int c)
 {
     row = r;

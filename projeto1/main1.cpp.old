@@ -40,7 +40,7 @@ Gives the user the option to choose the maze he wants to play.
 int chooseMaze();
 
 
-/** DONEEEE
+/**
 Opens and reads the file where the maze is.
 @param filename - name of the file to be opened
 @param player - object player passed by reference to change it's position 
@@ -51,7 +51,7 @@ Opens and reads the file where the maze is.
 Maze_Size readMaze(const string filename, Player& player, vector <Robot>& robots, vector <Fence>& fences);
 
 
-/**  DONEEEE
+/** 
 Fills a bidimentional vector(same size as the maze) with spaces, and then with all the fences, robots and the player.
 Then it shows the vector on the screen
 @param numcol - number of columns
@@ -106,7 +106,7 @@ struct Player {
 	bool alive = true;  // whether or not the player is dead or alive
 
 
-/**   DONEEEEE
+/** 
 Updates the players' position for each move
 @param fences - used to check if the player tried to move to a fences position
 @return true - if it was able to finish the function correctly

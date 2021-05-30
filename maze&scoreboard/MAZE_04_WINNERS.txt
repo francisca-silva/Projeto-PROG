@@ -1,0 +1,6 @@
+Player          - Time
+----------------------
+ola             -   16
+ordena          -   17
+lolippop        -   36
+finally         -   52

@@ -4,9 +4,8 @@ Player::Player()
 {
     alive = true;
     symbol = 'H';
-    row = -1;
+    row = -1;   // this will be helpful to see if the player has already been initialized or not
 }
-
 
 int Player::getRow() const
 {
@@ -16,11 +15,6 @@ int Player::getRow() const
 int Player::getCol() const
 {
     return col;
-}
-
-char Player::getSymbol() const
-{
-    return symbol;
 }
 
 bool Player::isAlive() const
@@ -48,7 +42,3 @@ void Player::setPosition(int r, int c)
 
 
 
-void Player::setSymbol(char s)
-{
-    symbol = s;
-}

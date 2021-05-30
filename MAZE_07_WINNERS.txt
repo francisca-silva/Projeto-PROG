@@ -1,5 +1,0 @@
-Player          - Time
-----------------------
-lol             -   12
-rr              -   52
-finally         -   26

@@ -1,4 +1,0 @@
-Player          - Time
-----------------------
-ez              -    9
-rainhaas        -   19

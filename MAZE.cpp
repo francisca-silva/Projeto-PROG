@@ -1,7 +1,6 @@
 #include "MAZE.hpp"
 #include "POST.hpp"
 
-
 Maze::Maze()
 {
     numRows = 0;
