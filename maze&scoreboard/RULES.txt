@@ -1,9 +1,27 @@
-The player is placed in a maze made up of posts. The posts are of two types: electrified and non-electrified. There are 
-also some interceptor robots that will try to destroy the player. If the player touches an electrified post or any of these 
-robots, that is the end of the game (and the player!). The robots are also destroyed when they touch an electrified 
-post or they collide with each other, and they become stuck when they collide with a non-electrified post.
-Every time the player moves in any direction (horizontally, vertically, or diagonally) to a contiguous cell, each robot 
-moves one cell closer to the new player's location, in whichever direction is the shortest path. The robots have no 
-vision sensors but they have an accurate odour sensor that allows them to follow the player!
-The maze has one or more exit gates. The objective of the player is to reach one of the exit gates, in the shortest time 
-possible, before being electrocuted (by touching an electrified post) or caught by a robot.
+--------------------------------------Rules--------------------------------------
+
+The player is placed in a maze made up of posts. There are also some interceptor robots that will try to destroy the player. 
+If the player touches an electrified post or any of these robots, that is the end of the game (and the player!).
+The robots are also destroyed when they touch an electrified post or they collide with each other, and they become stuck when they collide with a non-electrified post.
+
+Controls:
+----------------------
+|  Q  |   W    |  E  |
+----------------------
+|  A  | Player |  D  |
+----------------------
+|  Z  |   X    |  C  |
+----------------------
+The player has the option to stay in the current position by typing 'S'.
+
+Every time the player moves in any direction (horizontally, vertically, or diagonally) to a contiguous cell, each robot moves one cell closer to the new player's location, in whichever direction is the shortest path.
+The maze has one or more exit gates. The objective of the player is to reach one of the exit gates, in the shortest time possible, before being electrocuted (by touching an electrified post) or caught by a robot.
+
+Caption:
+* = electrified post; + = non-electrified post; O = exit door;
+H = player (alive); h = player (dead);
+R = robot (alive); r = robot (destroyed=dead/stuck); 
+
+
+The player can exit the game at any moment by typing CTRL-Z, in Windows, or CTRL-D, in Linux.
+Good luck! :D

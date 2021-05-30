@@ -17,6 +17,12 @@ int Player::getCol() const
     return col;
 }
 
+
+char Player::getSymbol() const
+{
+    return symbol;
+}
+
 bool Player::isAlive() const
 {
     return alive;

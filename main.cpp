@@ -1,4 +1,4 @@
-#include "functions.cpp"
+#include "functions.hpp"
 
 using namespace std;
 
